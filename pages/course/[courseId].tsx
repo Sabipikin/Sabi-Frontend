@@ -50,15 +50,13 @@ export default function CoursePage() {
   }, []);
 
   useEffect(() => {
-    if (!loading && !token) {
-      router.push('/login');
-    }
-  }, [token, loading, router]);
+    if (!courseId) return;
+  }, [courseId]);
 
   // Fetch course and lessons
   useEffect(() => {
     const fetchCourseContent = async () => {
-      if (!courseId || !token) return;
+      if (!courseId) return;
       
       try {
         setLoadingContent(true);
@@ -68,25 +66,27 @@ export default function CoursePage() {
         const lessonsData = await apiService.getCourseLessons(courseId, token);
         setLessons(lessonsData);
 
-        const enrollmentResponse = await apiService.getMyEnrollment(courseId, token).catch(() => null);
-        setEnrollment(enrollmentResponse);
+        if (token) {
+          const enrollmentResponse = await apiService.getMyEnrollment(courseId, token).catch(() => null);
+          setEnrollment(enrollmentResponse);
 
-        const canEnrollResponse = await apiService.canEnrollCourse(courseId, token).catch(() => null);
-        setCanEnroll(canEnrollResponse);
+          const canEnrollResponse = await apiService.canEnrollCourse(courseId, token).catch(() => null);
+          setCanEnroll(canEnrollResponse);
 
-        if (enrollmentResponse?.status === 'active') {
-          const modulesData = await apiService.getCourseModules(courseId, token);
-          setModules(modulesData);
-          if (modulesData.length > 0) {
-            setSelectedModule(modulesData[0]);
-            const contentData = await apiService.getModuleContent(courseId, modulesData[0].id, token);
-            setModuleContent(contentData);
+          if (enrollmentResponse?.status === 'active') {
+            const modulesData = await apiService.getCourseModules(courseId, token);
+            setModules(modulesData);
+            if (modulesData.length > 0) {
+              setSelectedModule(modulesData[0]);
+              const contentData = await apiService.getModuleContent(courseId, modulesData[0].id, token);
+              setModuleContent(contentData);
+            }
+            setCourseProgressLoading(true);
+            apiService.getCourseProgress(courseId, token).then(setCourseProgress).catch(err => {
+              console.error('Failed to load course progress:', err);
+              setCourseProgress(null);
+            }).finally(() => setCourseProgressLoading(false));
           }
-          setCourseProgressLoading(true);
-          apiService.getCourseProgress(courseId, token).then(setCourseProgress).catch(err => {
-            console.error('Failed to load course progress:', err);
-            setCourseProgress(null);
-          }).finally(() => setCourseProgressLoading(false));
         }
 
         if (lessonsData.length > 0) {
@@ -163,7 +163,12 @@ export default function CoursePage() {
   };
 
   const handleEnrollCourse = async () => {
-    if (!courseId || !token) return;
+    if (!courseId) return;
+    if (!token) {
+      router.push(`/signup?next=/course/${courseId}`);
+      return;
+    }
+
     setEnrolling(true);
     try {
       await apiService.enrollCourse(courseId, token);
@@ -180,7 +185,14 @@ export default function CoursePage() {
   };
 
   const handleStartLearning = async () => {
-    if (!courseId || !token) return;
+    if (!courseId) {
+      return;
+    }
+    if (!token) {
+      router.push(`/signup?next=/course/${courseId}`);
+      return;
+    }
+
     setStarting(true);
     try {
       await apiService.startLearning(courseId, token);

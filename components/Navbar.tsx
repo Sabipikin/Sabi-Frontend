@@ -17,8 +17,10 @@ export default function Navbar() {
 
   const navLinks = [
     { href: '/dashboard', label: 'Dashboard' },
-    { href: '/courses', label: 'Explore' },
-    { href: '/my-courses', label: 'My Courses' },
+    { href: '/diplomas', label: 'Diplomas' },
+    { href: '/programs', label: 'Programs' },
+    { href: '/courses', label: 'Courses' },
+    { href: '/my-courses', label: 'My Learning' },
     { href: '/portfolio', label: 'Portfolio' },
   ];
 
