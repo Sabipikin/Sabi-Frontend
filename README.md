@@ -215,7 +215,23 @@ To enable the Neon GitHub Actions workflow:
      contents: read
      pull-requests: write
    ```
+#### GitHub Actions Enhancements
+The Neon workflow now includes these advanced features:
 
+- **Database Setup**: Automatically creates all tables on new branches
+- **Database Testing**: Runs comprehensive database tests
+- **API Testing**: Starts the API server and tests endpoints
+- **Schema Diff Comments**: Posts database schema changes as PR comments
+
+#### Workflow Permissions
+The workflow requires these GitHub permissions:
+```yaml
+permissions:
+  contents: read
+  pull-requests: write
+```
+
+These are automatically configured in the workflow file.
 #### How the Neon Workflow Works
 - **On PR Open/Reopen/Sync**: Creates a new database branch named `preview/pr-{number}-{branch}`
 - **On PR Close**: Automatically deletes the associated database branch
