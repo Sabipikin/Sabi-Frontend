@@ -1,19 +1,54 @@
 'use client';
 
+'use client';
+
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function Home() {
   const { token, loading } = useAuth();
   const router = useRouter();
+  const [topCourses, setTopCourses] = useState<any[]>([]);
+  const [topPrograms, setTopPrograms] = useState<any[]>([]);
+  const [topDiplomas, setTopDiplomas] = useState<any[]>([]);
+  const [catalogLoading, setCatalogLoading] = useState(true);
 
   useEffect(() => {
     if (!loading && token) {
       router.push('/dashboard');
     }
   }, [token, loading, router]);
+
+  useEffect(() => {
+    const fetchCatalog = async () => {
+      try {
+        setCatalogLoading(true);
+        const [coursesRes, programsRes, diplomasRes] = await Promise.all([
+          fetch('/api/courses?skip=0&limit=4'),
+          fetch('/api/programs?skip=0&limit=4'),
+          fetch('/api/diplomas?skip=0&limit=4'),
+        ]);
+
+        const [coursesData, programsData, diplomasData] = await Promise.all([
+          coursesRes.ok ? coursesRes.json() : [],
+          programsRes.ok ? programsRes.json() : [],
+          diplomasRes.ok ? diplomasRes.json() : [],
+        ]);
+
+        setTopCourses(Array.isArray(coursesData) ? coursesData : []);
+        setTopPrograms(Array.isArray(programsData) ? programsData : []);
+        setTopDiplomas(Array.isArray(diplomasData) ? diplomasData : []);
+      } catch (err) {
+        console.error('Failed to load catalog items:', err);
+      } finally {
+        setCatalogLoading(false);
+      }
+    };
+
+    fetchCatalog();
+  }, []);
 
   if (loading) {
     return (
@@ -30,7 +65,20 @@ export default function Home() {
     <div className="min-h-screen bg-gradient-to-br from-background via-surface to-background">
       {/* Navigation */}
       <nav className="flex justify-between items-center px-6 py-6 max-w-7xl mx-auto relative">
-        <div className="text-3xl font-bold text-foreground font-display glow-text">Sabipath</div>
+        <div className="flex items-center gap-10">
+          <div className="text-3xl font-bold text-foreground font-display glow-text">Sabipath</div>
+          <div className="hidden md:flex items-center gap-6">
+            <Link href="/diplomas" className="text-foreground hover:text-primary font-medium transition-colors">
+              Diplomas
+            </Link>
+            <Link href="/programs" className="text-foreground hover:text-primary font-medium transition-colors">
+              Programs
+            </Link>
+            <Link href="/courses" className="text-foreground hover:text-primary font-medium transition-colors">
+              Courses
+            </Link>
+          </div>
+        </div>
         <div className="flex items-center space-x-6">
           <Link href="/login" className="text-foreground hover:text-primary font-medium transition-colors">
             Sign in
@@ -88,6 +136,28 @@ export default function Home() {
               Smart career guidance, interview prep, and job matching. Your competitive advantage in tech.
             </p>
           </div>
+        </div>
+
+        {/* Quick Access */}
+        <div className="mt-24 grid md:grid-cols-2 gap-8">
+          <Link href="/diplomas" className="block bg-surface/80 backdrop-blur-sm rounded-3xl p-10 border border-primary/20 hover:border-primary hover:shadow-xl transition-all">
+            <h3 className="text-3xl font-bold text-foreground mb-4">Diplomas</h3>
+            <p className="text-text-muted mb-6">
+              Explore diploma paths with multiple programs and career-aligned learning journeys.
+            </p>
+            <div className="inline-flex items-center gap-2 text-primary font-semibold">
+              View diploma programs →
+            </div>
+          </Link>
+          <Link href="/programs" className="block bg-surface/80 backdrop-blur-sm rounded-3xl p-10 border border-secondary/20 hover:border-secondary hover:shadow-xl transition-all">
+            <h3 className="text-3xl font-bold text-foreground mb-4">Programs</h3>
+            <p className="text-text-muted mb-6">
+              Browse structured programs that group the courses you need for fast, practical skill-building.
+            </p>
+            <div className="inline-flex items-center gap-2 text-secondary font-semibold">
+              Explore programs →
+            </div>
+          </Link>
         </div>
 
         {/* Stats */}

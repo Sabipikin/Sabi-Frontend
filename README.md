@@ -1,87 +1,279 @@
 # Sabipath
 
-A modern full-stack application with Next.js frontend, FastAPI backend, and PostgreSQL database.
+A comprehensive learning management system (LMS) built with modern web technologies. Features course enrollment, program management, diploma pathways, portfolio building, and gamification.
 
-## Project Structure
+## 🚀 Features
+
+### Core Learning Platform
+- **Course Management**: Create and manage courses with modules, lessons, and assessments
+- **Program Pathways**: Structured learning programs with multiple courses
+- **Diploma Systems**: Complete diploma pathways with program hierarchies
+- **Progress Tracking**: Detailed progress tracking for courses, programs, and diplomas
+- **Assessments & Quizzes**: Interactive assessments with scoring and feedback
+
+### User Management
+- **Multi-Role System**: Students, Teachers, Admins, and Super Admins
+- **Authentication**: Secure JWT-based authentication
+- **Public Browsing**: Guest users can explore courses without registration
+- **Enrollment System**: Flexible enrollment with payment integration
+
+### Advanced Features
+- **Portfolio Builder**: Create professional portfolios with projects and CV
+- **Gamification**: Points, streaks, and achievements system
+- **Admin Dashboard**: Comprehensive admin panel for content management
+- **Subscription Management**: Handle user subscriptions and payments
+- **AI-Powered Career Guidance**: Smart career recommendations
+
+### Technical Features
+- **Responsive Design**: Mobile-first design with Tailwind CSS
+- **Real-time Progress**: Live progress updates and notifications
+- **API Documentation**: Interactive API docs with Swagger/OpenAPI
+- **Docker Support**: Containerized deployment with Docker Compose
+
+## 🏗️ Project Structure
 
 ```
 sabipath/
-├── frontend/          # Next.js + TypeScript + Tailwind CSS
-├── backend/           # Python + FastAPI
-├── docker-compose.yml # Docker configuration
-└── README.md         # This file
+├── admin/              # Admin dashboard (Next.js)
+│   ├── components/     # Reusable components
+│   ├── pages/         # Admin pages
+│   └── services/      # API services
+├── frontend/           # Student/Teacher frontend (Next.js)
+│   ├── components/     # Reusable components
+│   ├── pages/         # Application pages
+│   ├── services/      # API services
+│   └── context/       # React context providers
+├── backend/            # FastAPI backend
+│   ├── routes/        # API route handlers
+│   ├── models/        # SQLAlchemy models
+│   ├── schemas/       # Pydantic schemas
+│   └── main.py        # Application entry point
+├── docker-compose.yml  # Docker configuration
+└── README.md          # This file
 ```
 
-## Getting Started
+## 🛠️ Tech Stack
+
+### Frontend
+- **Framework**: Next.js 14 with App Router
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **State Management**: React Context + Hooks
+- **Icons**: Custom SVG icons
+
+### Backend
+- **Framework**: FastAPI
+- **Language**: Python 3.11+
+- **Database**: PostgreSQL with SQLAlchemy
+- **Authentication**: JWT tokens
+- **Documentation**: Auto-generated OpenAPI/Swagger
+
+### DevOps
+- **Containerization**: Docker & Docker Compose
+- **Database**: PostgreSQL
+- **Environment**: Python virtual environments
+
+## 🚀 Getting Started
 
 ### Prerequisites
-- Node.js 18+ (for frontend)
+- Node.js 18+ (for frontend/admin)
 - Python 3.11+ (for backend)
 - Docker & Docker Compose (optional)
+- PostgreSQL (if not using Docker)
 
-### Quick Start
-
-#### Option 1: Using Docker Compose
+### Quick Start with Docker
 
 ```bash
-docker-compose up
+# Clone the repository
+git clone <repository-url>
+cd sabipath
+
+# Start all services
+docker-compose up -d
+
+# Access the applications
+# Frontend: http://localhost:3000
+# Admin: http://localhost:3001
+# API: http://localhost:8000
+# API Docs: http://localhost:8000/docs
 ```
 
-The application will be available at:
-- Frontend: http://localhost:3000
-- API: http://localhost:8000
-- API Docs: http://localhost:8000/docs
+### Manual Setup
 
-#### Option 2: Manual Setup
-
-**Frontend:**
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-**Backend:**
+#### 1. Backend Setup
 ```bash
 cd backend
+
+# Create virtual environment
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# Install dependencies
 pip install -r requirements.txt
+
+# Set up environment variables
+cp .env.example .env
+# Edit .env with your database credentials
+
+# Run the backend
 python main.py
 ```
 
-## Development
+#### 2. Cloud Database Setup
+For cloud deployment, use a managed PostgreSQL provider and point `DATABASE_URL` to your hosted database.
 
-### Frontend Development
-- Navigate to `frontend/` directory
-- Make changes to pages in `pages/` or components
-- Hot reload is enabled by default
+- **Supabase**: create a project, copy the `DATABASE_URL`, and set it in `.env`
+- **Neon**: create a database and use the generated connection string
+- **Railway / Heroku Postgres**: use the provided Postgres URL
 
-### Backend Development
-- Navigate to `backend/` directory
-- Make changes to `main.py` or create new modules
-- API documentation available at http://localhost:8000/docs
+Example `.env` for cloud deployment:
 
-## API Documentation
-
-Once the backend is running, visit http://localhost:8000/docs for interactive API documentation.
-
-## Environment Variables
-
-Create a `.env` file in the `backend/` directory:
-
+```env
+DATABASE_URL=postgresql://user:password@db-host:5432/sabipath
+DEBUG=False
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_KEY=your-supabase-service-key
 ```
+
+### Recommended web-based database options
+- **Supabase**: managed Postgres, realtime APIs, auth, storage, and easy migrations
+- **Neon**: serverless Postgres with connection pooling
+- **Railway**: easy database provisioning and URL-based config
+- **Heroku Postgres**: reliable managed Postgres with simple deployment
+
+The backend already supports cloud Postgres by reading `DATABASE_URL` from environment variables, so deployment can use any managed Postgres service.
+
+#### 2. Frontend Setup
+```bash
+cd frontend
+
+# Install dependencies
+npm install
+
+# Set up environment variables
+cp .env.local.example .env.local
+
+# Run the frontend
+npm run dev
+```
+
+#### 3. Admin Setup
+```bash
+cd admin
+
+# Install dependencies
+npm install
+
+# Run the admin panel
+npm run dev
+```
+
+## 📚 API Documentation
+
+When the backend is running, visit:
+- **API Documentation**: http://localhost:8000/docs
+- **Alternative Docs**: http://localhost:8000/redoc
+
+## 🔧 Environment Variables
+
+### Backend (.env)
+```env
 DATABASE_URL=postgresql://user:password@localhost:5432/sabipath
 DEBUG=True
+SECRET_KEY=your-secret-key-here
 ```
 
-## Technologies Used
+### Frontend (.env.local)
+```env
+NEXT_PUBLIC_API_URL=http://localhost:8000
+```
 
-- **Frontend:** Next.js, TypeScript, Tailwind CSS
-- **Backend:** FastAPI, Python
-- **Database:** PostgreSQL
-- **Containerization:** Docker
+## 🎯 User Roles & Permissions
 
-## License
+### Student
+- Browse and enroll in courses/programs/diplomas
+- Track learning progress
+- Build portfolio
+- Access gamification features
 
-MIT
+### Teacher
+- Create and manage courses
+- View student progress
+- Access teaching analytics
+
+### Admin
+- Full content management
+- User management
+- System configuration
+- Analytics dashboard
+
+### Super Admin
+- All admin permissions
+- Create/manage programs and diplomas
+- System-wide settings
+
+## 📊 Database Schema
+
+The application uses PostgreSQL with the following main entities:
+- **Users**: Authentication and profile data
+- **Courses**: Learning content with modules and lessons
+- **Programs**: Collections of courses
+- **Diplomas**: Complete qualification pathways
+- **Enrollments**: User progress tracking
+- **Assessments**: Quizzes and evaluations
+- **Portfolio**: User projects and CV data
+- **Gamification**: Points, streaks, achievements
+
+## 🔒 Security Features
+
+- JWT-based authentication
+- Password hashing with bcrypt
+- CORS protection
+- Input validation with Pydantic
+- SQL injection prevention
+- XSS protection
+
+## 🚀 Deployment
+
+### Production Deployment
+
+1. **Build the applications:**
+```bash
+# Frontend
+cd frontend && npm run build
+
+# Admin
+cd admin && npm run build
+```
+
+2. **Use production Docker setup:**
+```bash
+docker-compose -f docker-compose.prod.yml up -d
+```
+
+3. **Set up reverse proxy** (nginx recommended) for domain routing
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
+
+## 📝 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## 📞 Support
+
+For support and questions:
+- Create an issue in the repository
+- Check the API documentation
+- Review the codebase comments
+
+## 🎉 Acknowledgments
+
+- Built with modern web technologies
+- Inspired by leading LMS platforms
+- Community-driven development

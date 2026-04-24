@@ -34,17 +34,10 @@ export default function Courses() {
 
   // Fetch all courses
   useEffect(() => {
-    if (!authToken) {
-      router.push('/login');
-      return;
-    }
-
     const fetchCourses = async () => {
       try {
         setLoading(true);
-        const response = await fetch('http://localhost:8000/api/courses/', {
-          headers: { Authorization: `Bearer ${authToken}` },
-        });
+        const response = await fetch('http://localhost:8000/api/courses/?skip=0&limit=100');
         if (!response.ok) throw new Error('Failed to fetch courses');
         const data = await response.json();
         setCourses(Array.isArray(data) ? data : []);
@@ -55,8 +48,8 @@ export default function Courses() {
       }
     };
 
-    // Fetch enrolled courses
     const fetchEnrolled = async () => {
+      if (!authToken) return;
       try {
         const response = await fetch('http://localhost:8000/api/courses/enrolled', {
           headers: { Authorization: `Bearer ${authToken}` },
@@ -73,7 +66,7 @@ export default function Courses() {
 
     fetchCourses();
     fetchEnrolled();
-  }, [authToken, router]);
+  }, [authToken]);
 
   const filteredCourses = courses.filter((course) => {
     const matchesSearch = course.title.toLowerCase().includes(filters.search.toLowerCase()) ||
@@ -84,24 +77,29 @@ export default function Courses() {
   });
 
   const handleEnroll = async (courseId: number) => {
-    if (!authToken) return;
+    if (!authToken) {
+      router.push(`/signup?next=/course/${courseId}`);
+      return;
+    }
+
     setEnrolling(courseId);
 
     try {
-        const response = await fetch(`http://localhost:8000/api/enrollments/${courseId}/enroll`, {
+      const response = await fetch(`http://localhost:8000/api/enrollments/${courseId}/enroll`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${authToken}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ payment_id: null }),
       });
 
       if (!response.ok) {
-        const data = await response.json();
+        const data = await response.json().catch(() => ({}));
         throw new Error(data.detail || 'Failed to enroll');
       }
 
-      // Add to enrolled set
       const newEnrolled = new Set(enrolledCourseIds);
       newEnrolled.add(courseId);
       setEnrolledCourseIds(newEnrolled);
 
-      // Redirect to course
       setTimeout(() => router.push(`/learning?courseId=${courseId}`), 500);
     } catch (err) {
       alert(err instanceof Error ? err.message : 'Failed to enroll in course');

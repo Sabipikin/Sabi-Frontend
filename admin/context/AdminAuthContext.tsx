@@ -38,7 +38,6 @@ export const AdminAuthProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const [theme, setThemeState] = useState<string>('dark');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [isHydrated, setIsHydrated] = useState(false);
 
   // Load from localStorage after hydration (client-only)
   useEffect(() => {
@@ -50,7 +49,6 @@ export const AdminAuthProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     setRole(savedRole);  // Now stores role_name like "super_admin"
     setThemeState(savedTheme);
     document.documentElement.setAttribute('data-theme', savedTheme);
-    setIsHydrated(true);
   }, []);
 
   const login = async (email: string, password: string) => {

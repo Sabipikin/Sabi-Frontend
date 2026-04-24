@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
 import { AdminLayout } from '@/components/AdminLayout';
 import { useAdminAuth } from '@/context/AdminAuthContext';
 
@@ -10,7 +9,6 @@ interface DashboardStats {
 }
 
 export default function Dashboard() {
-  const router = useRouter();
   const { token, role } = useAdminAuth();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);

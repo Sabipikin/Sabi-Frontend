@@ -1,14 +1,18 @@
+'use client';
+
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { AdminLayout } from '@/components/AdminLayout';
 import { useAdminAuth } from '@/context/AdminAuthContext';
+import { ProgramService, Program } from '@/services/programService';
 
 interface Course {
   id: number;
   title: string;
   description: string;
   category: string;
+  program_id?: number;
   difficulty: string;
   status: string;
   instructor_id: number;
@@ -19,23 +23,34 @@ export default function Courses() {
   const { token } = useAdminAuth();
   const router = useRouter();
   const [courses, setCourses] = useState<Course[]>([]);
+  const [programs, setPrograms] = useState<Program[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<number | null>(null);
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
   const [bulkLoading, setBulkLoading] = useState(false);
+  const [showAssignModal, setShowAssignModal] = useState(false);
+  const [assigningCourseId, setAssigningCourseId] = useState<number | null>(null);
+  const [selectedProgramId, setSelectedProgramId] = useState<number | null>(null);
 
   useEffect(() => {
     if (!token) return;
 
-    const fetchCourses = async () => {
+    const fetchData = async () => {
       try {
-        const response = await fetch('http://localhost:8000/api/courses/', {
+        setLoading(true);
+        
+        // Fetch courses
+        const coursesResponse = await fetch('http://localhost:8000/api/courses/', {
           headers: { Authorization: `Bearer ${token}` },
         });
-        if (!response.ok) throw new Error('Failed to fetch courses');
-        const data = await response.json();
-        setCourses(Array.isArray(data) ? data : []);
+        if (!coursesResponse.ok) throw new Error('Failed to fetch courses');
+        const coursesData = await coursesResponse.json();
+        setCourses(Array.isArray(coursesData) ? coursesData : []);
+
+        // Fetch programs
+        const programsData = await ProgramService.getPrograms(token);
+        setPrograms(programsData);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Unknown error');
       } finally {
@@ -43,7 +58,7 @@ export default function Courses() {
       }
     };
 
-    fetchCourses();
+    fetchData();
   }, [token]);
 
   const handleDeleteCourse = async (courseId: number) => {
@@ -68,7 +83,6 @@ export default function Courses() {
       });
 
       if (!response.ok) throw new Error('Failed to delete course');
-
       setCourses(courses.filter(c => c.id !== courseId));
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to delete course');
@@ -154,7 +168,6 @@ export default function Courses() {
       if (!response.ok) throw new Error('Failed to publish courses');
       
       const result = await response.json();
-      // Update course statuses to published
       const updatedCourses = courses.map(c => 
         selectedIds.has(c.id) ? { ...c, status: 'published' } : c
       );
@@ -167,6 +180,42 @@ export default function Courses() {
     } finally {
       setBulkLoading(false);
     }
+  };
+
+  const handleAssignToProgram = async () => {
+    if (!token || !assigningCourseId) return;
+
+    try {
+      const response = await fetch(`http://localhost:8000/api/admin/courses/${assigningCourseId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ program_id: selectedProgramId || null }),
+      });
+
+      if (!response.ok) throw new Error('Failed to assign course to program');
+
+      setCourses(courses.map(c => 
+        c.id === assigningCourseId 
+          ? { ...c, program_id: selectedProgramId || undefined } 
+          : c
+      ));
+
+      setShowAssignModal(false);
+      setAssigningCourseId(null);
+      setSelectedProgramId(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to assign course to program');
+    }
+  };
+
+  const openAssignModal = (courseId: number) => {
+    const course = courses.find(c => c.id === courseId);
+    setAssigningCourseId(courseId);
+    setSelectedProgramId(course?.program_id || null);
+    setShowAssignModal(true);
   };
 
   return (
@@ -229,6 +278,7 @@ export default function Courses() {
                   <th className="px-6 py-3 text-left text-gray-300">ID</th>
                   <th className="px-6 py-3 text-left text-gray-300">Title</th>
                   <th className="px-6 py-3 text-left text-gray-300">Category</th>
+                  <th className="px-6 py-3 text-left text-gray-300">Program</th>
                   <th className="px-6 py-3 text-left text-gray-300">Difficulty</th>
                   <th className="px-6 py-3 text-left text-gray-300">Status</th>
                   <th className="px-6 py-3 text-left text-gray-300">Created</th>
@@ -249,6 +299,15 @@ export default function Courses() {
                     <td className="px-6 py-3 text-white">{course.id}</td>
                     <td className="px-6 py-3 text-white font-medium">{course.title}</td>
                     <td className="px-6 py-3 text-white">{course.category}</td>
+                    <td className="px-6 py-3 text-white">
+                      {course.program_id ? (
+                        <span className="px-2 py-1 bg-purple-900/30 border border-purple-600 text-purple-300 rounded text-sm">
+                          {programs.find(p => p.id === course.program_id)?.title || 'Unknown'}
+                        </span>
+                      ) : (
+                        <span className="text-gray-500 text-sm">-</span>
+                      )}
+                    </td>
                     <td className="px-6 py-3 text-white">
                       <span className="px-2 py-1 bg-cyan-900 text-cyan-300 rounded text-sm">
                         {course.difficulty}
@@ -277,6 +336,13 @@ export default function Courses() {
                           📚
                         </button>
                         <button
+                          onClick={() => openAssignModal(course.id)}
+                          className="text-purple-400 hover:text-purple-300 font-medium text-sm"
+                          title="Assign to Program"
+                        >
+                          🎯
+                        </button>
+                        <button
                           onClick={() => handleDeleteCourse(course.id)}
                           disabled={deletingId === course.id}
                           className="text-red-400 hover:text-red-300 font-medium text-sm disabled:opacity-50"
@@ -293,6 +359,49 @@ export default function Courses() {
           </div>
         ) : (
           !loading && <p className="text-gray-400">No courses found. <Link href="/super-admin/create-course" className="text-cyan-400 hover:underline">Create one now!</Link></p>
+        )}
+
+        {showAssignModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-gray-800 rounded-lg p-6 w-full max-w-md">
+              <h2 className="text-xl font-bold mb-4 text-white">Assign Course to Program</h2>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">Select Program</label>
+                  <select
+                    value={selectedProgramId || ''}
+                    onChange={(e) => setSelectedProgramId(e.target.value ? parseInt(e.target.value) : null)}
+                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                  >
+                    <option value="">No Program (Standalone Course)</option>
+                    {programs.map((program) => (
+                      <option key={program.id} value={program.id}>
+                        {program.title}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              <div className="flex justify-end space-x-3 mt-6">
+                <button
+                  onClick={() => {
+                    setShowAssignModal(false);
+                    setAssigningCourseId(null);
+                    setSelectedProgramId(null);
+                  }}
+                  className="px-4 py-2 text-gray-300 hover:text-white border border-gray-600 rounded-lg"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleAssignToProgram}
+                  className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg"
+                >
+                  Assign
+                </button>
+              </div>
+            </div>
+          </div>
         )}
       </div>
     </AdminLayout>
