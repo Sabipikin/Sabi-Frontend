@@ -159,6 +159,69 @@ DEBUG=False
 
 > If your Neon URL does not already include `sslmode=require`, add it manually.
 
+#### Getting Your Neon Connection String
+1. Visit [Neon Console](https://console.neon.tech)
+2. Select your project (should be named something like "Sabipikin/Sabi-Educate")
+3. Go to **Dashboard** → **Connection Details**
+4. Copy the full connection string
+5. Update `backend/.env` with this string
+
+Your connection string should look like:
+```
+postgresql://neondb_owner:AbCdEfGhIjKl@ep-cool-mode-123456.us-east-1.aws.neon.tech/neondb?sslmode=require
+```
+
+#### Testing Your Neon Connection
+After setting up your `.env` file, test the connection:
+
+```bash
+cd backend
+python3 test_neon.py
+```
+
+This script will:
+- Test your database connection
+- Create all required tables
+- Verify everything is working
+
+If the test passes, you can start your backend server.
+
+### GitHub Actions Integration with Neon
+This repository includes a GitHub Actions workflow (`.github/workflows/neon_workflow.yml`) that automatically creates database branches for pull requests and deletes them when PRs are closed.
+
+#### Setup GitHub Actions for Neon
+To enable the Neon GitHub Actions workflow:
+
+1. **Get your Neon Project ID**:
+   - Go to your Neon project dashboard
+   - Copy the Project ID from the project settings
+
+2. **Create a Neon API Key**:
+   - Go to Neon Console → Account → Developer Settings
+   - Generate a new API key
+
+3. **Configure GitHub Repository Secrets**:
+   - Go to your GitHub repository → Settings → Secrets and variables → Actions
+   - Add these secrets:
+     - `NEON_API_KEY`: Your Neon API key
+   - Add these variables (Repository variables):
+     - `NEON_PROJECT_ID`: Your Neon project ID
+
+4. **Optional: Enable Schema Diff Comments**:
+   - If you want PR comments showing database schema changes, uncomment the schema diff section in `neon_workflow.yml`
+   - Add these permissions to the workflow:
+   ```yaml
+   permissions:
+     contents: read
+     pull-requests: write
+   ```
+
+#### How the Neon Workflow Works
+- **On PR Open/Reopen/Sync**: Creates a new database branch named `preview/pr-{number}-{branch}`
+- **On PR Close**: Automatically deletes the associated database branch
+- **Branch Expiration**: Branches expire after 14 days automatically
+- **Database URLs**: Available as workflow outputs for use in other jobs (migrations, tests, etc.)
+
 ### Using Neon with Docker Compose
 If you're deploying only the backend and want to use Neon instead of local Postgres, set the cloud `DATABASE_URL` in `backend/.env` and omit the `postgres` service in your deployment environment. The app will connect directly to Neon.
 
