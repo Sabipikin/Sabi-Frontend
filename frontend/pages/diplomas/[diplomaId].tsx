@@ -2,6 +2,7 @@ import { ChangeEvent, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
+import { API_BASE_URL } from '@/services/api';
 
 const DiplomaDetailsPage = () => {
   const router = useRouter();
@@ -29,7 +30,7 @@ const DiplomaDetailsPage = () => {
   const fetchDiploma = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`http://localhost:8000/api/diplomas/${diplomaId}`);
+      const response = await fetch(`${API_BASE_URL}/api/diplomas/${diplomaId}`);
       
       if (!response.ok) {
         throw new Error('Failed to fetch diploma');
@@ -56,7 +57,7 @@ const DiplomaDetailsPage = () => {
   const fetchEnrollment = async () => {
     try {
       const response = await fetch(
-        `http://localhost:8000/api/diploma-enrollments/${diplomaId}/my-enrollment`,
+        `${API_BASE_URL}/api/diploma-enrollments/${diplomaId}/my-enrollment`,
         {
           headers: {
             'Authorization': `Bearer ${token}`
@@ -70,7 +71,7 @@ const DiplomaDetailsPage = () => {
         
         // Fetch progress
         const progressResponse = await fetch(
-          `http://localhost:8000/api/diploma-enrollments/${diplomaId}/diploma-progress`,
+          `${API_BASE_URL}/api/diploma-enrollments/${diplomaId}/diploma-progress`,
           {
             headers: {
               'Authorization': `Bearer ${token}`
@@ -92,7 +93,7 @@ const DiplomaDetailsPage = () => {
     try {
       setEnrolling(true);
       const response = await fetch(
-        `http://localhost:8000/api/diploma-enrollments/${diplomaId}/enroll`,
+        `${API_BASE_URL}/api/diploma-enrollments/${diplomaId}/enroll`,
         {
           method: 'POST',
           headers: {
@@ -122,7 +123,7 @@ const DiplomaDetailsPage = () => {
   const handleStartLearning = async () => {
     try {
       const response = await fetch(
-        `http://localhost:8000/api/diploma-enrollments/${diplomaId}/start-learning`,
+        `${API_BASE_URL}/api/diploma-enrollments/${diplomaId}/start-learning`,
         {
           method: 'POST',
           headers: {

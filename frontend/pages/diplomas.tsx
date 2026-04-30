@@ -1,6 +1,7 @@
 import { ChangeEvent, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
+import { API_BASE_URL } from '@/services/api';
 
 const DiplomasPage = () => {
   const [diplomas, setDiplomas] = useState<any[]>([]);
@@ -17,14 +18,14 @@ const DiplomasPage = () => {
   const fetchDiplomas = async () => {
     try {
       setLoading(true);
-      const url = new URL('http://localhost:8000/api/diplomas', window.location.origin);
+      const url = new URL(`${API_BASE_URL}/api/diplomas`, window.location.origin);
       url.searchParams.append('skip', String(page * 10));
       url.searchParams.append('limit', '10');
       if (search) {
         url.searchParams.append('search', search);
       }
 
-      const response = await fetch(`http://localhost:8000/api/diplomas?skip=${page * 10}&limit=10${search ? `&search=${search}` : ''}`);
+      const response = await fetch(url.toString());
       
       if (!response.ok) {
         throw new Error('Failed to fetch diplomas');

@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Navbar from '@/components/Navbar';
+import { API_BASE_URL } from '@/services/api';
 
 interface EnrolledCourse {
   id: number;
@@ -49,7 +50,7 @@ export default function MyCourses() {
         }
 
         const response = await fetch(
-          `http://localhost:8000/api/enrollment/courses/enrolled${params.toString() ? '?' + params.toString() : ''}`,
+          `${API_BASE_URL}/api/enrollment/courses/enrolled${params.toString() ? '?' + params.toString() : ''}`,
           {
             headers: { Authorization: `Bearer ${authToken}` },
           }

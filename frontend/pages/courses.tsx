@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import Navbar from '@/components/Navbar';
 import { useRouter } from 'next/navigation';
+import { API_BASE_URL } from '@/services/api';
 
 interface Course {
   id: number;
@@ -37,7 +38,7 @@ export default function Courses() {
     const fetchCourses = async () => {
       try {
         setLoading(true);
-        const response = await fetch('http://localhost:8000/api/courses/?skip=0&limit=100');
+        const response = await fetch(`${API_BASE_URL}/api/courses/?skip=0&limit=100`);
         if (!response.ok) throw new Error('Failed to fetch courses');
         const data = await response.json();
         setCourses(Array.isArray(data) ? data : []);
@@ -51,7 +52,7 @@ export default function Courses() {
     const fetchEnrolled = async () => {
       if (!authToken) return;
       try {
-        const response = await fetch('http://localhost:8000/api/courses/enrolled', {
+        const response = await fetch(`${API_BASE_URL}/api/courses/enrolled`, {
           headers: { Authorization: `Bearer ${authToken}` },
         });
         if (response.ok) {
@@ -85,7 +86,7 @@ export default function Courses() {
     setEnrolling(courseId);
 
     try {
-      const response = await fetch(`http://localhost:8000/api/enrollments/${courseId}/enroll`, {
+      const response = await fetch(`${API_BASE_URL}/api/enrollments/${courseId}/enroll`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${authToken}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({ payment_id: null }),

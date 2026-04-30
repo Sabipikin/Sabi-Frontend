@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
+import { API_BASE_URL } from '@/services/api';
 
 const ProgramDetailsPage = () => {
   const router = useRouter();
@@ -29,7 +30,7 @@ const ProgramDetailsPage = () => {
   const fetchProgram = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`http://localhost:8000/api/programs/${programId}`);
+      const response = await fetch(`${API_BASE_URL}/api/programs/${programId}`);
       
       if (!response.ok) {
         throw new Error('Failed to fetch program');
@@ -39,7 +40,7 @@ const ProgramDetailsPage = () => {
       setProgram(data);
 
       // Fetch courses in the program
-      const coursesResponse = await fetch(`http://localhost:8000/api/programs/${programId}/courses`);
+      const coursesResponse = await fetch(`${API_BASE_URL}/api/programs/${programId}/courses`);
       if (coursesResponse.ok) {
         const coursesData = await coursesResponse.json();
         setCourses(coursesData);
@@ -58,7 +59,7 @@ const ProgramDetailsPage = () => {
   const fetchEnrollment = async () => {
     try {
       const response = await fetch(
-        `http://localhost:8000/api/program-enrollments/${programId}/my-enrollment`,
+        `${API_BASE_URL}/api/program-enrollments/${programId}/my-enrollment`,
         {
           headers: {
             'Authorization': `Bearer ${token}`
@@ -72,7 +73,7 @@ const ProgramDetailsPage = () => {
         
         // Fetch progress
         const progressResponse = await fetch(
-          `http://localhost:8000/api/program-enrollments/${programId}/program-progress`,
+          `${API_BASE_URL}/api/program-enrollments/${programId}/program-progress`,
           {
             headers: {
               'Authorization': `Bearer ${token}`
@@ -94,7 +95,7 @@ const ProgramDetailsPage = () => {
     try {
       setEnrolling(true);
       const response = await fetch(
-        `http://localhost:8000/api/program-enrollments/${programId}/enroll`,
+        `${API_BASE_URL}/api/program-enrollments/${programId}/enroll`,
         {
           method: 'POST',
           headers: {
@@ -124,7 +125,7 @@ const ProgramDetailsPage = () => {
   const handleStartLearning = async () => {
     try {
       const response = await fetch(
-        `http://localhost:8000/api/program-enrollments/${programId}/start-learning`,
+        `${API_BASE_URL}/api/program-enrollments/${programId}/start-learning`,
         {
           method: 'POST',
           headers: {
