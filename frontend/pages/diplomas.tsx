@@ -33,13 +33,12 @@ const DiplomasPage = () => {
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState('');
   const [levelFilter, setLevelFilter] = useState('all');
-  const [statusFilter, setStatusFilter] = useState('all');
   const [page, setPage] = useState(0);
   const router = useRouter();
 
   useEffect(() => {
     fetchDiplomas();
-  }, [search, levelFilter, statusFilter, page]);
+  }, [search, levelFilter, page]);
 
   const fetchDiplomas = async () => {
     try {
@@ -50,7 +49,6 @@ const DiplomasPage = () => {
       });
       if (search) params.append('search', search);
       if (levelFilter !== 'all') params.append('level', levelFilter);
-      if (statusFilter !== 'all') params.append('status', statusFilter);
 
       const url = new URL(`${API_BASE_URL}/api/diplomas`, window.location.origin);
       url.search = params.toString();
@@ -80,11 +78,6 @@ const DiplomasPage = () => {
 
   const handleLevelFilter = (e: ChangeEvent<HTMLSelectElement>) => {
     setLevelFilter(e.target.value);
-    setPage(0);
-  };
-
-  const handleStatusFilter = (e: ChangeEvent<HTMLSelectElement>) => {
-    setStatusFilter(e.target.value);
     setPage(0);
   };
 
@@ -160,20 +153,6 @@ const DiplomasPage = () => {
                 <option value="certificate">Certificate</option>
                 <option value="diploma">Diploma</option>
                 <option value="degree">Degree</option>
-              </select>
-            </div>
-
-            {/* Status Filter */}
-            <div>
-              <label className="block text-gray-400 text-sm font-medium mb-2">Status</label>
-              <select
-                value={statusFilter}
-                onChange={handleStatusFilter}
-                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 text-white rounded-lg focus:ring-2 focus:ring-cyan-500"
-              >
-                <option value="all">All Status</option>
-                <option value="published">Published</option>
-                <option value="draft">Draft</option>
               </select>
             </div>
 

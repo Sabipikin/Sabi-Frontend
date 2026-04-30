@@ -34,14 +34,13 @@ const ProgramsPage = () => {
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState('');
   const [difficultyFilter, setDifficultyFilter] = useState('all');
-  const [statusFilter, setStatusFilter] = useState('all');
   const [page, setPage] = useState(0);
 
   const buildApiUrl = (path: string) => `${API_BASE_URL}${path}`;
 
   useEffect(() => {
     fetchPrograms();
-  }, [search, difficultyFilter, statusFilter, page]);
+  }, [search, difficultyFilter, page]);
 
   const fetchPrograms = async () => {
     try {
@@ -52,7 +51,6 @@ const ProgramsPage = () => {
       });
       if (search) params.append('search', search);
       if (difficultyFilter !== 'all') params.append('difficulty', difficultyFilter);
-      if (statusFilter !== 'all') params.append('status', statusFilter);
 
       const url = buildApiUrl(`/api/programs?${params.toString()}`);
       const response = await fetch(url);
@@ -81,11 +79,6 @@ const ProgramsPage = () => {
 
   const handleDifficultyFilter = (e: ChangeEvent<HTMLSelectElement>) => {
     setDifficultyFilter(e.target.value);
-    setPage(0);
-  };
-
-  const handleStatusFilter = (e: ChangeEvent<HTMLSelectElement>) => {
-    setStatusFilter(e.target.value);
     setPage(0);
   };
 
@@ -161,20 +154,6 @@ const ProgramsPage = () => {
                 <option value="beginner">Beginner</option>
                 <option value="intermediate">Intermediate</option>
                 <option value="advanced">Advanced</option>
-              </select>
-            </div>
-
-            {/* Status Filter */}
-            <div>
-              <label className="block text-gray-400 text-sm font-medium mb-2">Status</label>
-              <select
-                value={statusFilter}
-                onChange={handleStatusFilter}
-                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 text-white rounded-lg focus:ring-2 focus:ring-cyan-500"
-              >
-                <option value="all">All Status</option>
-                <option value="published">Published</option>
-                <option value="draft">Draft</option>
               </select>
             </div>
 
