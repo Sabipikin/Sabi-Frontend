@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import Navbar from '@/components/Navbar';
 import { useRouter } from 'next/navigation';
 import { API_BASE_URL } from '@/services/api';
-import PaymentCheckout from '@/components/PaymentCheckout';
+import PurchaseOptions from '@/components/PurchaseOptions';
 
 interface Course {
   id: number;
@@ -304,32 +304,22 @@ export default function Courses() {
         )}
       </div>
 
-      {/* Payment Checkout Modal */}
+      {/* Purchase Options Modal */}
       {showPayment && courses.find(c => c.id === showPayment) && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-gray-900 rounded-lg max-w-md w-full p-6 border border-gray-700 relative">
+          <div className="bg-gray-900 rounded-lg max-w-2xl w-full p-6 border border-gray-700 relative">
             <button
               onClick={() => setShowPayment(null)}
               className="absolute top-4 right-4 text-gray-400 hover:text-white"
             >
               ✕
             </button>
-            <PaymentCheckout
+            <PurchaseOptions
               itemType="course"
               itemId={showPayment}
               itemName={courses.find(c => c.id === showPayment)?.title || 'Course'}
-              amount={courses.find(c => c.id === showPayment)?.fee || 0}
-              currency="gbp"
-              onSuccess={() => {
-                setShowPayment(null);
-                // Course enrollment will be completed via webhook
-                setTimeout(() => {
-                  router.push(`/learning?courseId=${showPayment}`);
-                }, 2000);
-              }}
-              onError={(error) => {
-                alert(`Payment error: ${error}`);
-              }}
+              itemPrice={courses.find(c => c.id === showPayment)?.fee || 0}
+              onClose={() => setShowPayment(null)}
             />
           </div>
         </div>

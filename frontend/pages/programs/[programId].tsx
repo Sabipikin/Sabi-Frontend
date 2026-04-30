@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { API_BASE_URL } from '@/services/api';
-import PaymentCheckout from '@/components/PaymentCheckout';
+import PurchaseOptions from '@/components/PurchaseOptions';
 
 const ProgramDetailsPage = () => {
   const router = useRouter();
@@ -309,31 +309,27 @@ const ProgramDetailsPage = () => {
           )}
         </div>
 
-        {/* Payment Modal */}
+        {/* Purchase Options Modal */}
         {showPayment && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-lg max-w-md w-full p-6 border border-gray-200 relative">
+            <div className="bg-gray-900 rounded-lg max-w-2xl w-full p-6 border border-gray-700 relative">
               <button
                 onClick={() => setShowPayment(false)}
-                className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+                className="absolute top-4 right-4 text-gray-400 hover:text-white"
               >
                 ✕
               </button>
-              <PaymentCheckout
+              <PurchaseOptions
                 itemType="program"
                 itemId={Number(programId)}
                 itemName={program?.title || 'Program'}
-                amount={program?.fee || 0}
-                currency="gbp"
-                onSuccess={() => {
+                itemPrice={program?.fee || 0}
+                onClose={() => {
                   setShowPayment(false);
                   // Program enrollment will be completed via webhook
                   setTimeout(() => {
                     fetchEnrollment();
                   }, 2000);
-                }}
-                onError={(error) => {
-                  alert(`Payment error: ${error}`);
                 }}
               />
             </div>
