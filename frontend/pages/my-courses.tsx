@@ -50,7 +50,7 @@ export default function MyCourses() {
         }
 
         const response = await fetch(
-          `${API_BASE_URL}/api/enrollment/courses/enrolled${params.toString() ? '?' + params.toString() : ''}`,
+          `${API_BASE_URL}/api/courses/enrolled${params.toString() ? '?' + params.toString() : ''}`,
           {
             headers: { Authorization: `Bearer ${authToken}` },
           }
