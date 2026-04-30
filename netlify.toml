@@ -1,0 +1,14 @@
+[build]
+  base = "frontend"
+  command = "npm run build"
+  publish = "frontend/.next"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+# Environment variables for production
+[context.production.environment]
+  NEXT_PUBLIC_API_URL = "https://sabi-backend-vqud.onrender.com"
