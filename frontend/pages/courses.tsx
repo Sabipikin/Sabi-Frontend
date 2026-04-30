@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Navbar from '@/components/Navbar';
 import { useRouter } from 'next/navigation';
 import { API_BASE_URL } from '@/services/api';
+import PaymentCheckout from '@/components/PaymentCheckout';
 
 interface Course {
   id: number;
@@ -14,6 +15,9 @@ interface Course {
   duration_hours: number;
   status: string;
   created_at: string;
+  fee: number;
+  promo_amount?: number;
+  is_on_promo?: boolean;
 }
 
 interface Filter {
@@ -29,9 +33,11 @@ export default function Courses() {
   const [error, setError] = useState<string | null>(null);
   const [filters, setFilters] = useState<Filter>({ category: 'all', difficulty: 'all', search: '' });
   const [enrolling, setEnrolling] = useState<number | null>(null);
+  const [showPayment, setShowPayment] = useState<number | null>(null);
   const router = useRouter();
 
   const authToken = typeof window !== 'undefined' ? localStorage.getItem('authToken') : null;
+  const userToken = typeof window !== 'undefined' ? localStorage.getItem('userToken') : null;
 
   // Fetch all courses
   useEffect(() => {
@@ -78,17 +84,28 @@ export default function Courses() {
   });
 
   const handleEnroll = async (courseId: number) => {
-    if (!authToken) {
+    if (!authToken && !userToken) {
       router.push(`/signup?next=/course/${courseId}`);
       return;
     }
 
+    // Find the course to check if it has a fee
+    const course = courses.find(c => c.id === courseId);
+    if (!course) return;
+
+    // If course has a fee, show payment checkout
+    if (course.fee && course.fee > 0) {
+      setShowPayment(courseId);
+      return;
+    }
+
+    // Free course - enroll directly
     setEnrolling(courseId);
 
     try {
       const response = await fetch(`${API_BASE_URL}/api/enrollments/${courseId}/enroll`, {
         method: 'POST',
-        headers: { Authorization: `Bearer ${authToken}`, 'Content-Type': 'application/json' },
+        headers: { Authorization: `Bearer ${authToken || userToken}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({ payment_id: null }),
       });
 
@@ -242,6 +259,20 @@ export default function Courses() {
                         <span>📅</span>
                         <span>{new Date(course.created_at).toLocaleDateString()}</span>
                       </div>
+                      {course.fee > 0 && (
+                        <div className="flex items-center gap-1">
+                          <span>💷</span>
+                          <span>
+                            {course.is_on_promo && course.promo_amount ? (
+                              <>
+                                <span className="line-through">{(course.fee / 100).toFixed(2)}</span> £{(course.promo_amount / 100).toFixed(2)}
+                              </>
+                            ) : (
+                              `£${(course.fee / 100).toFixed(2)}`
+                            )}
+                          </span>
+                        </div>
+                      )}
                     </div>
 
                     {/* Status Badge */}
@@ -272,6 +303,37 @@ export default function Courses() {
           </div>
         )}
       </div>
+
+      {/* Payment Checkout Modal */}
+      {showPayment && courses.find(c => c.id === showPayment) && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-gray-900 rounded-lg max-w-md w-full p-6 border border-gray-700 relative">
+            <button
+              onClick={() => setShowPayment(null)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-white"
+            >
+              ✕
+            </button>
+            <PaymentCheckout
+              itemType="course"
+              itemId={showPayment}
+              itemName={courses.find(c => c.id === showPayment)?.title || 'Course'}
+              amount={courses.find(c => c.id === showPayment)?.fee || 0}
+              currency="gbp"
+              onSuccess={() => {
+                setShowPayment(null);
+                // Course enrollment will be completed via webhook
+                setTimeout(() => {
+                  router.push(`/learning?courseId=${showPayment}`);
+                }, 2000);
+              }}
+              onError={(error) => {
+                alert(`Payment error: ${error}`);
+              }}
+            />
+          </div>
+        </div>
+      )}
     </main>
   );
 }

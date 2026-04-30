@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { API_BASE_URL } from '@/services/api';
+import PaymentCheckout from '@/components/PaymentCheckout';
 
 const ProgramDetailsPage = () => {
   const router = useRouter();
@@ -17,6 +18,7 @@ const ProgramDetailsPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [enrolling, setEnrolling] = useState(false);
+  const [showPayment, setShowPayment] = useState(false);
 
   useEffect(() => {
     if (programId) {
@@ -92,6 +94,13 @@ const ProgramDetailsPage = () => {
   };
 
   const handleEnroll = async () => {
+    // If program has a fee, show payment checkout
+    if (program?.fee && program.fee > 0) {
+      setShowPayment(true);
+      return;
+    }
+
+    // Free program - enroll directly
     try {
       setEnrolling(true);
       const response = await fetch(
@@ -299,6 +308,37 @@ const ProgramDetailsPage = () => {
             </div>
           )}
         </div>
+
+        {/* Payment Modal */}
+        {showPayment && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg max-w-md w-full p-6 border border-gray-200 relative">
+              <button
+                onClick={() => setShowPayment(false)}
+                className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+              >
+                ✕
+              </button>
+              <PaymentCheckout
+                itemType="program"
+                itemId={Number(programId)}
+                itemName={program?.title || 'Program'}
+                amount={program?.fee || 0}
+                currency="gbp"
+                onSuccess={() => {
+                  setShowPayment(false);
+                  // Program enrollment will be completed via webhook
+                  setTimeout(() => {
+                    fetchEnrollment();
+                  }, 2000);
+                }}
+                onError={(error) => {
+                  alert(`Payment error: ${error}`);
+                }}
+              />
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
