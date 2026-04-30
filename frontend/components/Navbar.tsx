@@ -26,41 +26,41 @@ export default function Navbar() {
 
   return (
     <nav className="bg-surface/80 backdrop-blur-md border-b border-primary/20 sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="flex justify-between items-center h-20">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6">
+        <div className="flex justify-between items-center h-16 sm:h-20">
           {/* Logo */}
-          <div className="flex items-center">
-            <Link href="/dashboard" className="text-3xl font-bold text-foreground font-display glow-text hover:scale-105 transition-transform">
+          <div className="flex items-center min-w-0">
+            <Link href="/dashboard" className="text-2xl sm:text-3xl font-bold text-foreground font-display glow-text hover:scale-105 transition-transform truncate">
               Sabipath
             </Link>
           </div>
 
           {/* Desktop Navigation Links */}
-          <div className="hidden md:flex items-center space-x-8">
+          <div className="hidden md:flex items-center space-x-6 lg:space-x-8">
             {navLinks.map((link) => (
-              <Link key={link.href} href={link.href} className="text-foreground hover:text-primary font-medium transition-colors relative group">
+              <Link key={link.href} href={link.href} className="text-sm lg:text-base text-foreground hover:text-primary font-medium transition-colors relative group whitespace-nowrap">
                 {link.label}
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all group-hover:w-full"></span>
               </Link>
             ))}
-            <a href="#" className="text-foreground hover:text-primary font-medium transition-colors relative group">
+            <a href="#" className="text-sm lg:text-base text-foreground hover:text-primary font-medium transition-colors relative group whitespace-nowrap">
               Help
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all group-hover:w-full"></span>
             </a>
           </div>
 
           {/* User Menu & Mobile Button */}
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2 sm:space-x-4">
             {/* Desktop User Info */}
             <div className="hidden sm:block text-right">
-              <div className="font-semibold text-foreground text-sm">{user?.full_name}</div>
-              <div className="text-text-muted text-xs">{user?.email}</div>
+              <div className="font-semibold text-foreground text-xs sm:text-sm truncate">{user?.full_name}</div>
+              <div className="text-text-muted text-xs truncate">{user?.email}</div>
             </div>
             
             {/* Logout Button */}
             <button
               onClick={handleLogout}
-              className="hidden md:block px-6 py-3 bg-secondary text-background rounded-xl hover:bg-secondary/80 font-medium transition-all hover:scale-105 glow"
+              className="hidden md:block px-4 lg:px-6 py-2 lg:py-3 bg-secondary text-background rounded-lg lg:rounded-xl hover:bg-secondary/80 font-medium text-sm lg:text-base transition-all hover:scale-105 glow"
             >
               Logout
             </button>
@@ -68,7 +68,8 @@ export default function Navbar() {
             {/* Mobile Menu Button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 text-foreground hover:text-primary transition-colors"
+              className="md:hidden p-2 text-foreground hover:text-primary transition-colors flex-shrink-0"
+              aria-label="Toggle menu"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 {mobileMenuOpen ? (
@@ -83,31 +84,31 @@ export default function Navbar() {
 
         {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden border-t border-primary/20 py-4 space-y-3">
+          <div className="md:hidden border-t border-primary/20 py-3 space-y-2 pb-4">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className="block px-4 py-2 text-foreground hover:text-primary hover:bg-primary/10 rounded-lg transition-all"
+                className="block px-3 py-2 text-sm text-foreground hover:text-primary hover:bg-primary/10 rounded-lg transition-all"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 {link.label}
               </Link>
             ))}
-            <a href="#" className="block px-4 py-2 text-foreground hover:text-primary hover:bg-primary/10 rounded-lg transition-all">
+            <a href="#" className="block px-3 py-2 text-sm text-foreground hover:text-primary hover:bg-primary/10 rounded-lg transition-all">
               Help
             </a>
-            <div className="border-t border-primary/20 pt-3 space-y-2">
-              <div className="px-4 py-2">
-                <div className="font-semibold text-foreground text-sm">{user?.full_name}</div>
-                <div className="text-text-muted text-xs">{user?.email}</div>
+            <div className="border-t border-primary/20 pt-3 mt-3 space-y-2">
+              <div className="px-3 py-2">
+                <div className="font-semibold text-foreground text-xs truncate">{user?.full_name}</div>
+                <div className="text-text-muted text-xs truncate">{user?.email}</div>
               </div>
               <button
                 onClick={() => {
                   setMobileMenuOpen(false);
                   handleLogout();
                 }}
-                className="w-full mx-4 px-4 py-2 bg-secondary text-background rounded-lg hover:bg-secondary/80 font-medium transition-all"
+                className="w-full px-3 py-2 bg-secondary text-background rounded-lg hover:bg-secondary/80 font-medium text-sm transition-all active:scale-95"
               >
                 Logout
               </button>

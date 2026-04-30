@@ -23,22 +23,22 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-surface to-background px-4">
-      <div className="w-full max-w-md p-8 bg-surface/90 backdrop-blur-sm rounded-2xl border border-primary/20 glow">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-foreground mb-2 font-display">Welcome back</h1>
-          <p className="text-text-muted">Sign in to your Sabipath account</p>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-surface to-background px-4 py-8">
+      <div className="w-full max-w-md p-6 sm:p-8 bg-surface/90 backdrop-blur-sm rounded-2xl border border-primary/20 glow">
+        <div className="text-center mb-6 sm:mb-8">
+          <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-2 font-display">Welcome back</h1>
+          <p className="text-text-muted text-sm sm:text-base">Sign in to your Sabipath account</p>
         </div>
 
         {error && (
-          <div className="mb-6 p-4 bg-secondary/20 border border-secondary/30 text-secondary rounded-xl text-sm">
+          <div className="mb-6 p-3 sm:p-4 bg-secondary/20 border border-secondary/30 text-secondary rounded-xl text-xs sm:text-sm">
             {error}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-foreground mb-2">
+            <label htmlFor="email" className="block text-xs sm:text-sm font-medium text-foreground mb-2">
               Email
             </label>
             <input
@@ -47,13 +47,13 @@ export default function LoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full px-4 py-3 bg-surface-light border border-primary/30 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-foreground placeholder-text-muted"
+              className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-surface-light border border-primary/30 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-foreground placeholder-text-muted text-sm"
               placeholder="you@example.com"
             />
           </div>
 
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-foreground mb-2">
+            <label htmlFor="password" className="block text-xs sm:text-sm font-medium text-foreground mb-2">
               Password
             </label>
             <div className="relative">
@@ -63,13 +63,13 @@ export default function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="w-full px-4 py-3 pr-12 bg-surface-light border border-primary/30 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-foreground placeholder-text-muted"
+                className="w-full px-3 sm:px-4 py-2.5 sm:py-3 pr-10 sm:pr-12 bg-surface-light border border-primary/30 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-foreground placeholder-text-muted text-sm"
                 placeholder="••••••••"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-text-muted hover:text-primary transition-colors"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-text-muted hover:text-primary transition-colors text-sm sm:text-base"
               >
                 {showPassword ? "🙈" : "👁️"}
               </button>
@@ -79,7 +79,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-primary text-background py-3 rounded-xl font-semibold hover:bg-primary-dark transition-all disabled:opacity-50 hover:scale-105 glow"
+            className="w-full bg-primary text-background py-2.5 sm:py-3 rounded-xl font-semibold hover:bg-primary-dark transition-all disabled:opacity-50 hover:scale-105 glow active:scale-95 text-sm sm:text-base"
           >
             {loading ? (
               <div className="flex items-center justify-center">
@@ -92,7 +92,7 @@ export default function LoginPage() {
           </button>
         </form>
 
-        <p className="text-center text-text-muted text-sm mt-8">
+        <p className="text-center text-text-muted text-xs sm:text-sm mt-6 sm:mt-8">
           Don't have an account?{' '}
           <Link href="/signup" className="text-primary hover:text-primary-dark font-medium transition-colors">
             Sign up
