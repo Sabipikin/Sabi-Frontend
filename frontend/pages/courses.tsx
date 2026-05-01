@@ -5,6 +5,7 @@ import Navbar from '@/components/Navbar';
 import { useRouter } from 'next/navigation';
 import { API_BASE_URL } from '@/services/api';
 import PurchaseOptions from '@/components/PurchaseOptions';
+import { useCart } from '@/context/CartContext';
 
 interface Course {
   id: number;
@@ -35,6 +36,7 @@ export default function Courses() {
   const [enrolling, setEnrolling] = useState<number | null>(null);
   const [showPayment, setShowPayment] = useState<number | null>(null);
   const router = useRouter();
+  const { addToCart } = useCart();
 
   const authToken = typeof window !== 'undefined' ? localStorage.getItem('authToken') : null;
   const userToken = typeof window !== 'undefined' ? localStorage.getItem('userToken') : null;
@@ -85,7 +87,22 @@ export default function Courses() {
 
   const handleEnroll = async (courseId: number) => {
     if (!authToken && !userToken) {
-      router.push(`/signup?next=/course/${courseId}`);
+      // Add to cart and redirect to signup
+      const course = courses.find(c => c.id === courseId);
+      if (course) {
+        try {
+          await addToCart({
+            item_type: 'course',
+            course_id: courseId,
+            price: course.fee || 0,
+            discount: course.is_on_promo && course.promo_amount ? course.fee - course.promo_amount : 0,
+            quantity: 1,
+          });
+          router.push(`/signup?next=/checkout`);
+        } catch (error) {
+          alert('Failed to add course to cart');
+        }
+      }
       return;
     }
 

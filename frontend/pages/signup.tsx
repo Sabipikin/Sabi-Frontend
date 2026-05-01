@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
+import { useCart } from '@/context/CartContext';
 
 export default function SignupPage() {
   const [email, setEmail] = useState('');
@@ -12,13 +13,19 @@ export default function SignupPage() {
   const [region, setRegion] = useState('uk');
   const [showPassword, setShowPassword] = useState(false);
   const { signup, error, loading } = useAuth();
+  const { getItemCount } = useCart();
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       await signup(email, password, fullName, region);
-      router.push('/dashboard');
+      // Check if user has items in cart
+      if (getItemCount() > 0) {
+        router.push('/checkout');
+      } else {
+        router.push('/dashboard');
+      }
     } catch (err) {
       // Error is handled by context
     }

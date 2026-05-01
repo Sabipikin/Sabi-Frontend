@@ -24,7 +24,7 @@ export default function Home() {
       try {
         setCatalogLoading(true);
         const [coursesRes, programsRes, diplomasRes] = await Promise.all([
-          fetch('/api/courses?skip=0&limit=4'),
+          fetch('/api/courses/featured'),
           fetch('/api/programs?skip=0&limit=4'),
           fetch('/api/diplomas?skip=0&limit=4'),
         ]);
@@ -134,6 +134,37 @@ export default function Home() {
               Smart career guidance, interview prep, and job matching. Your competitive advantage in tech.
             </p>
           </div>
+        </div>
+
+        {/* Featured Courses */}
+        <div className="mt-24">
+          <h2 className="text-4xl font-bold text-foreground mb-12 text-center font-display">Top Courses</h2>
+          {catalogLoading ? (
+            <div className="flex justify-center">
+              <div className="animate-pulse">
+                <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+              </div>
+            </div>
+          ) : topCourses.length > 0 ? (
+            <div className="grid md:grid-cols-3 gap-8">
+              {topCourses.map((course) => (
+                <div key={course.id} className="bg-surface/80 backdrop-blur-sm rounded-2xl p-6 border border-primary/20 hover:border-primary/40 transition-all hover:scale-105 glow">
+                  <h3 className="text-xl font-bold text-foreground mb-3 font-display">{course.title}</h3>
+                  <p className="text-text-muted mb-4 line-clamp-3">{course.description}</p>
+                  <div className="flex items-center justify-between">
+                    <span className="text-primary font-semibold">
+                      ${(course.price / 100).toFixed(2)}
+                    </span>
+                    <Link href={`/courses/${course.id}`} className="text-primary hover:text-primary-dark font-medium transition-colors">
+                      View Course →
+                    </Link>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-text-muted text-center">No featured courses available yet.</p>
+          )}
         </div>
 
         {/* Quick Access */}
