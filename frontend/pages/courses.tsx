@@ -37,9 +37,7 @@ export default function Courses() {
   const [showPayment, setShowPayment] = useState<number | null>(null);
   const router = useRouter();
   const { addToCart } = useCart();
-
-  const authToken = typeof window !== 'undefined' ? localStorage.getItem('authToken') : null;
-  const userToken = typeof window !== 'undefined' ? localStorage.getItem('userToken') : null;
+  const { token: authToken, userToken } = useAuth();
 
   // Fetch all courses
   useEffect(() => {

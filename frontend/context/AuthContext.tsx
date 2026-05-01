@@ -6,6 +6,7 @@ import { User, apiService, Course, Enrollment } from '@/services/api';
 interface AuthContextType {
   user: User | null;
   token: string | null;
+  userToken: string | null; // Alias for token for backward compatibility
   loading: boolean;
   error: string | null;
   enrolledCourses: { enrollment: Enrollment; course: Course }[];
@@ -24,28 +25,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [error, setError] = useState<string | null>(null);
   const [enrolledCourses, setEnrolledCourses] = useState<{ enrollment: Enrollment; course: Course }[]>([]);
 
-  // Load token from localStorage on mount and validate it
+  // Initialize loading state - no automatic token validation
   useEffect(() => {
-    const validateStoredToken = async () => {
-      const storedToken = localStorage.getItem('authToken');
-      if (storedToken) {
-        try {
-          // Verify token is valid by fetching current user
-          const currentUser = await apiService.getCurrentUser(storedToken);
-          setToken(storedToken);
-          setUser(currentUser);
-        } catch (err) {
-          console.warn('Stored token is invalid:', err instanceof Error ? err.message : 'Unknown error');
-          // Clear invalid token
-          localStorage.removeItem('authToken');
-          setToken(null);
-          setUser(null);
-        }
-      }
-      setLoading(false);
-    };
-    
-    validateStoredToken();
+    setLoading(false);
   }, []);
 
   const refreshEnrolledCourses = async () => {
@@ -118,7 +100,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, loading, error, enrolledCourses, signup, login, logout, refreshEnrolledCourses }}>
+    <AuthContext.Provider value={{ user, token, userToken: token, loading, error, enrolledCourses, signup, login, logout, refreshEnrolledCourses }}>
       {children}
     </AuthContext.Provider>
   );

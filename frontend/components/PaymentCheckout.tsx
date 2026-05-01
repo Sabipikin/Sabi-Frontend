@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/router';
+import { useAuth } from '@/context/AuthContext';
 
 interface PaymentCheckoutProps {
   itemType: 'course' | 'program' | 'diploma';
@@ -25,13 +26,14 @@ export const PaymentCheckout: React.FC<PaymentCheckoutProps> = ({
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { userToken } = useAuth();
 
   const handleCheckout = async () => {
     setLoading(true);
     setError(null);
 
     try {
-      const token = localStorage.getItem('userToken');
+      const token = userToken;
       if (!token) {
         throw new Error('Please log in to continue');
       }

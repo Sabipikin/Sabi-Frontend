@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
+import { useAuth } from '@/context/AuthContext';
 
 export default function PaymentSuccess() {
   const router = useRouter();
@@ -8,13 +9,14 @@ export default function PaymentSuccess() {
   const [paymentDetails, setPaymentDetails] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { userToken } = useAuth();
 
   useEffect(() => {
     if (!payment_id) return;
 
     const fetchPaymentStatus = async () => {
       try {
-        const token = localStorage.getItem('userToken');
+        const token = userToken;
         if (!token) {
           setError('Please log in');
           return;

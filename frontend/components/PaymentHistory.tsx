@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { useAuth } from '@/context/AuthContext';
 
 interface Payment {
   id: number;
@@ -16,11 +17,12 @@ export const PaymentHistory: React.FC = () => {
   const [payments, setPayments] = useState<Payment[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { userToken } = useAuth();
 
   useEffect(() => {
     const fetchPayments = async () => {
       try {
-        const token = localStorage.getItem('userToken');
+        const token = userToken;
         if (!token) {
           setError('Please log in');
           return;

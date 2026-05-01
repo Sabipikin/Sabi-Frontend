@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Navbar from '@/components/Navbar';
 import { API_BASE_URL } from '@/services/api';
+import { useAuth } from '@/context/AuthContext';
 
 interface EnrolledCourse {
   id: number;
@@ -32,8 +33,7 @@ export default function MyCourses() {
   const [error, setError] = useState<string | null>(null);
   const [filterStatus, setFilterStatus] = useState<'all' | 'in_progress' | 'completed'>('all');
   const router = useRouter();
-
-  const authToken = typeof window !== 'undefined' ? localStorage.getItem('authToken') : null;
+  const { token: authToken } = useAuth();
 
   useEffect(() => {
     if (!authToken) {

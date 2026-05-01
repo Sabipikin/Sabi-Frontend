@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import PaymentCheckout from './PaymentCheckout';
+import { useAuth } from '@/context/AuthContext';
 
 interface SubscriptionPlan {
   id: number;
@@ -32,6 +33,7 @@ export const PurchaseOptions: React.FC<PurchaseOptionsProps> = ({
   const router = useRouter();
   const [showPayment, setShowPayment] = useState(false);
   const [showSubscriptionOptions, setShowSubscriptionOptions] = useState(false);
+  const { userToken } = useAuth();
   const [plans, setPlans] = useState<SubscriptionPlan[]>([]);
   const [loadingPlans, setLoadingPlans] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -203,7 +205,7 @@ export const PurchaseOptions: React.FC<PurchaseOptionsProps> = ({
                   className="border border-purple-500 rounded-lg p-4 bg-gray-800 hover:bg-gray-750 transition-colors cursor-pointer"
                   onClick={() => {
                     // Trigger subscription checkout with this plan
-                    const token = localStorage.getItem('userToken');
+                    const token = userToken;
                     if (!token) {
                       alert('Please log in to subscribe');
                       return;
