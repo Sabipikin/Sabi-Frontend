@@ -4,16 +4,20 @@ import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { MessageCircle } from 'lucide-react';
 
 export default function Navbar() {
   const { user, logout } = useAuth();
   const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [helpOpen, setHelpOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
     router.push('/');
   };
+
+  const whatsappLink = 'https://wa.me/2347037154753';
 
   const navLinks = [
     { href: '/dashboard', label: 'Dashboard' },
@@ -43,10 +47,30 @@ export default function Navbar() {
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all group-hover:w-full"></span>
               </Link>
             ))}
-            <a href="#" className="text-sm lg:text-base text-foreground hover:text-primary font-medium transition-colors relative group whitespace-nowrap">
-              Help
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all group-hover:w-full"></span>
-            </a>
+            <div className="relative">
+              <button 
+                onClick={() => setHelpOpen(!helpOpen)}
+                className="text-sm lg:text-base text-foreground hover:text-primary font-medium transition-colors relative group whitespace-nowrap"
+              >
+                Help
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all group-hover:w-full"></span>
+              </button>
+              {helpOpen && (
+                <div className="absolute right-0 mt-2 w-64 bg-surface border border-primary/20 rounded-lg shadow-lg p-4 z-50">
+                  <p className="text-sm text-foreground mb-3">📋 Coming Soon</p>
+                  <p className="text-xs text-text-muted mb-4">Our support team is preparing an enhanced help center. In the meantime, reach out to us on WhatsApp!</p>
+                  <a 
+                    href={whatsappLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-2 w-full px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium text-sm transition-all"
+                  >
+                    <MessageCircle size={16} />
+                    Message on WhatsApp
+                  </a>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* User Menu & Mobile Button */}
@@ -95,9 +119,33 @@ export default function Navbar() {
                 {link.label}
               </Link>
             ))}
-            <a href="#" className="block px-3 py-2 text-sm text-foreground hover:text-primary hover:bg-primary/10 rounded-lg transition-all">
-              Help
-            </a>
+            <div className="px-3 py-2 space-y-2">
+              <button
+                onClick={() => setHelpOpen(!helpOpen)}
+                className="w-full text-left text-sm text-foreground hover:text-primary hover:bg-primary/10 rounded-lg px-2 py-1 transition-all"
+              >
+                Help
+              </button>
+              {helpOpen && (
+                <div className="bg-primary/10 border border-primary/20 rounded-lg p-3 ml-2 mt-2">
+                  <p className="text-xs text-foreground font-medium mb-2">📋 Coming Soon</p>
+                  <p className="text-xs text-text-muted mb-3">Our support team is preparing an enhanced help center. In the meantime, reach out to us on WhatsApp!</p>
+                  <a 
+                    href={whatsappLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      setHelpOpen(false);
+                    }}
+                    className="flex items-center justify-center gap-2 w-full px-3 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium text-sm transition-all"
+                  >
+                    <MessageCircle size={16} />
+                    Message on WhatsApp
+                  </a>
+                </div>
+              )}
+            </div>
             <div className="border-t border-primary/20 pt-3 mt-3 space-y-2">
               <div className="px-3 py-2">
                 <div className="font-semibold text-foreground text-xs truncate">{user?.full_name}</div>
