@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { API_BASE_URL } from '@/services/api';
 import PurchaseOptions from '@/components/PurchaseOptions';
 import { useCart } from '@/context/CartContext';
+import { useAuth } from '@/context/AuthContext';
 
 interface Course {
   id: number;
