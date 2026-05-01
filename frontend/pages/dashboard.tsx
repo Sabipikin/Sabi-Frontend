@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Navbar from '@/components/Navbar';
+import RecommendationsWidget from '@/components/RecommendationsWidget';
 import { apiService } from '@/services/api';
 
 interface UserStats {
@@ -211,9 +212,9 @@ export default function DashboardPage() {
         </div>
 
         {/* Main Features Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Learning Hub */}
-          <div className="bg-surface/80 backdrop-blur-sm rounded-2xl p-8 border border-primary/20 hover:border-primary/40 transition-all hover:scale-105 glow">
+          <div className="lg:col-span-2 bg-surface/80 backdrop-blur-sm rounded-2xl p-8 border border-primary/20 hover:border-primary/40 transition-all hover:scale-105 glow">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-bold text-foreground font-display">Learning Hub</h2>
               <Link href="/learning" className="text-primary hover:text-primary-dark font-medium transition-colors flex items-center">
@@ -255,6 +256,85 @@ export default function DashboardPage() {
             </div>
           </div>
 
+          {/* Recommendations Sidebar */}
+          <div>
+            {token && <RecommendationsWidget userToken={token} />}
+          </div>
+        </div>
+
+        {/* Career Pathways & Trending Courses */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
+          {/* Career Pathways */}
+          <div className="bg-surface/80 backdrop-blur-sm rounded-2xl p-8 border border-secondary/20 hover:border-secondary/40 transition-all hover:scale-105 glow">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold text-foreground font-display">Career Pathways</h2>
+              <Link href="/career-pathways" className="text-secondary hover:text-secondary/80 font-medium transition-colors flex items-center">
+                Explore <span className="ml-1">→</span>
+              </Link>
+            </div>
+            <p className="text-text-muted mb-6 leading-relaxed">Choose a structured learning path aligned with your career goals.</p>
+            <div className="space-y-3">
+              <div className="p-4 bg-gradient-to-r from-indigo-500/10 to-blue-500/10 rounded-xl border border-indigo-200/30">
+                <div className="flex items-start">
+                  <span className="text-2xl mr-3">🎯</span>
+                  <div>
+                    <div className="font-semibold text-foreground">Full Stack Developer</div>
+                    <div className="text-sm text-text-muted">12 months • Advanced</div>
+                  </div>
+                </div>
+              </div>
+              <div className="p-4 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-xl border border-purple-200/30">
+                <div className="flex items-start">
+                  <span className="text-2xl mr-3">📊</span>
+                  <div>
+                    <div className="font-semibold text-foreground">Data Science</div>
+                    <div className="text-sm text-text-muted">14 months • Advanced</div>
+                  </div>
+                </div>
+              </div>
+              <Link href="/career-pathways" className="block w-full text-center px-4 py-2 bg-secondary/20 text-secondary rounded-lg font-semibold hover:bg-secondary/30 transition-all">
+                View all pathways
+              </Link>
+            </div>
+          </div>
+
+          {/* Trending Courses */}
+          <div className="bg-surface/80 backdrop-blur-sm rounded-2xl p-8 border border-accent/20 hover:border-accent/40 transition-all hover:scale-105 glow">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold text-foreground font-display">🔥 What's Trending</h2>
+              <Link href="/trending" className="text-accent hover:text-accent/80 font-medium transition-colors flex items-center">
+                See more <span className="ml-1">→</span>
+              </Link>
+            </div>
+            <p className="text-text-muted mb-6 leading-relaxed">Discover the most popular courses and in-demand skills right now.</p>
+            <div className="space-y-3">
+              <div className="p-4 bg-gradient-to-r from-red-500/10 to-orange-500/10 rounded-xl border border-red-200/30">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="font-semibold text-foreground">React Development</div>
+                    <div className="text-sm text-text-muted">892 students enrolling</div>
+                  </div>
+                  <span className="text-xl">🚀</span>
+                </div>
+              </div>
+              <div className="p-4 bg-gradient-to-r from-green-500/10 to-emerald-500/10 rounded-xl border border-green-200/30">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="font-semibold text-foreground">Python & AI</div>
+                    <div className="text-sm text-text-muted">756 students this month</div>
+                  </div>
+                  <span className="text-xl">🤖</span>
+                </div>
+              </div>
+              <Link href="/trending" className="block w-full text-center px-4 py-2 bg-accent/20 text-accent rounded-lg font-semibold hover:bg-accent/30 transition-all">
+                Browse trending
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        {/* Portfolio Builder & AI Chat - Grid Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
           {/* Portfolio Builder */}
           <div className="bg-surface/80 backdrop-blur-sm rounded-2xl p-8 border border-secondary/20 hover:border-secondary/40 transition-all hover:scale-105 glow">
             <div className="flex items-center justify-between mb-6">
@@ -287,24 +367,24 @@ export default function DashboardPage() {
               </div>
             </div>
           </div>
-        </div>
 
-        {/* AI Career Chat */}
-        <div className="bg-surface/80 backdrop-blur-sm rounded-2xl p-8 mt-8 border border-accent/20 hover:border-accent/40 transition-all hover:scale-105 glow">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-foreground font-display">AI Career Assistant</h2>
-            <Link href="/chat" className="text-accent hover:text-accent/80 font-medium transition-colors flex items-center">
-              Start chatting <span className="ml-1">→</span>
-            </Link>
-          </div>
-          <p className="text-text-muted mb-6 leading-relaxed">Get personalized career advice and guidance from our AI assistant.</p>
-          <div className="bg-gradient-to-r from-accent/10 to-primary/10 rounded-xl p-6 border border-accent/20">
-            <div className="flex items-start">
-              <span className="text-3xl mr-4">🤖</span>
-              <div>
-                <div className="font-semibold text-foreground mb-2">Ready to help!</div>
-                <div className="text-text-muted">
-                  Ask me about career paths, skill development, job search strategies, or get personalized recommendations.
+          {/* AI Career Chat */}
+          <div className="bg-surface/80 backdrop-blur-sm rounded-2xl p-8 border border-accent/20 hover:border-accent/40 transition-all hover:scale-105 glow">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold text-foreground font-display">AI Career Assistant</h2>
+              <Link href="/chat" className="text-accent hover:text-accent/80 font-medium transition-colors flex items-center">
+                Start chatting <span className="ml-1">→</span>
+              </Link>
+            </div>
+            <p className="text-text-muted mb-6 leading-relaxed">Get personalized career advice and guidance from our AI assistant.</p>
+            <div className="bg-gradient-to-r from-accent/10 to-primary/10 rounded-xl p-6 border border-accent/20">
+              <div className="flex items-start">
+                <span className="text-3xl mr-4">🤖</span>
+                <div>
+                  <div className="font-semibold text-foreground mb-2">Ready to help!</div>
+                  <div className="text-text-muted">
+                    Ask me about career paths, skill development, job search strategies, or get personalized recommendations.
+                  </div>
                 </div>
               </div>
             </div>
