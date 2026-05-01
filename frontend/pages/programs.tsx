@@ -145,14 +145,25 @@ const ProgramsPage = () => {
       </nav>
 
       <main className="max-w-7xl mx-auto px-6 py-12">
-        {/* Header */}
+        {/* Enhanced Header */}
         <div className="text-center mb-16">
           <h1 className="text-5xl md:text-6xl font-bold text-foreground mb-6 font-display">
-            Structured <span className="text-secondary glow-text">Programs</span>
+            🎯 Program <span className="text-secondary glow-text">Marketplace</span>
           </h1>
           <p className="text-xl text-text-muted mb-8 max-w-3xl mx-auto">
-            Comprehensive learning paths that combine multiple courses into cohesive skill-building journeys. Perfect for career advancement.
+            Comprehensive learning paths that combine multiple courses into cohesive skill-building journeys. Perfect for career advancement and structured learning.
           </p>
+          <div className="flex flex-col sm:flex-row justify-center gap-4 mb-8">
+            <div className="bg-surface/80 backdrop-blur-sm rounded-xl px-6 py-3 border border-secondary/20">
+              <span className="text-secondary font-semibold">🎯 {programs.length}+ Structured Programs</span>
+            </div>
+            <div className="bg-surface/80 backdrop-blur-sm rounded-xl px-6 py-3 border border-primary/20">
+              <span className="text-primary font-semibold">📚 Multiple Courses</span>
+            </div>
+            <div className="bg-surface/80 backdrop-blur-sm rounded-xl px-6 py-3 border border-accent/20">
+              <span className="text-accent font-semibold">🏆 Career Focused</span>
+            </div>
+          </div>
         </div>
 
         {error && (
@@ -161,58 +172,71 @@ const ProgramsPage = () => {
           </div>
         )}
 
-        {/* Filters */}
-        <div className="mb-12 bg-surface/80 backdrop-blur-sm rounded-2xl p-8 border border-secondary/20">
+        {/* Enhanced Filters */}
+        <div className="mb-12 bg-surface/80 backdrop-blur-sm rounded-2xl p-8 border border-secondary/20 shadow-2xl">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             {/* Search */}
-            <div>
-              <label className="block text-foreground text-sm font-medium mb-3">Search Programs</label>
+            <div className="space-y-2">
+              <label className="block text-foreground text-sm font-semibold">🔍 Search Programs</label>
               <input
                 type="text"
-                placeholder="Search by title..."
+                placeholder="Find your ideal learning path"
                 value={search}
                 onChange={handleSearch}
-                className="w-full px-4 py-3 bg-background border border-secondary/30 text-foreground rounded-xl focus:ring-2 focus:ring-secondary focus:border-secondary transition-all"
+                className="w-full px-4 py-3 bg-background border border-secondary/30 text-foreground rounded-xl focus:ring-2 focus:ring-secondary focus:border-secondary transition-all placeholder-text-muted"
               />
             </div>
 
             {/* Difficulty Filter */}
-            <div>
-              <label className="block text-foreground text-sm font-medium mb-3">Difficulty</label>
+            <div className="space-y-2">
+              <label className="block text-foreground text-sm font-semibold">🎯 Difficulty Level</label>
               <select
                 value={difficultyFilter}
                 onChange={handleDifficultyFilter}
                 className="w-full px-4 py-3 bg-background border border-secondary/30 text-foreground rounded-xl focus:ring-2 focus:ring-secondary focus:border-secondary transition-all"
               >
-                <option value="all">All Levels</option>
-                <option value="beginner">Beginner</option>
-                <option value="intermediate">Intermediate</option>
-                <option value="advanced">Advanced</option>
+                <option value="all" className="bg-surface text-foreground">All Levels</option>
+                <option value="beginner" className="bg-surface text-foreground">Beginner</option>
+                <option value="intermediate" className="bg-surface text-foreground">Intermediate</option>
+                <option value="advanced" className="bg-surface text-foreground">Advanced</option>
               </select>
             </div>
 
-            {/* Results Count */}
-            <div className="flex items-end justify-center">
-              <div className="text-center">
-                <div className="text-3xl font-bold text-secondary font-display">{programs.length}</div>
-                <div className="text-text-muted text-sm">programs found</div>
+            {/* Results Summary */}
+            <div className="flex items-end">
+              <div className="bg-gradient-to-r from-secondary/20 to-primary/20 rounded-xl p-4 border border-secondary/20 w-full">
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-secondary mb-1 font-display">{programs.length}</div>
+                  <div className="text-sm text-text-muted">Programs Found</div>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Programs Grid */}
+        {/* Enhanced Programs Grid */}
         {loading ? (
           <div className="flex justify-center py-20">
-            <div className="animate-pulse">
-              <div className="w-12 h-12 border-4 border-secondary border-t-transparent rounded-full animate-spin"></div>
+            <div className="relative">
+              <div className="w-16 h-16 border-4 border-secondary/30 border-t-secondary rounded-full animate-spin"></div>
+              <div className="absolute inset-0 w-16 h-16 border-4 border-primary/20 border-t-primary rounded-full animate-spin animation-delay-300"></div>
             </div>
           </div>
         ) : programs.length === 0 ? (
           <div className="text-center py-20 bg-surface/50 rounded-2xl border border-secondary/20">
             <div className="text-6xl mb-4">🎯</div>
             <h3 className="text-2xl font-bold text-foreground mb-2 font-display">No programs found</h3>
-            <p className="text-text-muted">Try adjusting your search filters</p>
+            <p className="text-text-muted text-lg mb-6">Try adjusting your search criteria</p>
+            <button
+              onClick={() => {
+                setSearch('');
+                setDifficultyFilter('all');
+                setPage(0);
+              }}
+              className="bg-secondary text-background px-6 py-3 rounded-xl hover:bg-secondary-dark font-semibold transition-all hover:scale-105 glow"
+            >
+              Clear Filters
+            </button>
           </div>
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -221,89 +245,127 @@ const ProgramsPage = () => {
               const discount = program.is_on_promo ? program.fee - program.promo_amount : 0;
               const finalPrice = discount > 0 ? discount : price;
 
+              // Mock social proof (in real app, this would come from API)
+              const enrolledCount = Math.floor(Math.random() * 200) + 15;
+              const rating = (Math.random() * 1.5 + 3.5).toFixed(1);
+              const reviewCount = Math.floor(Math.random() * 20) + 2;
+
               return (
                 <div
                   key={program.id}
-                  className="bg-surface/80 backdrop-blur-sm rounded-2xl overflow-hidden border border-secondary/20 hover:border-secondary/40 transition-all hover:scale-105 glow group"
+                  className="group bg-surface/90 backdrop-blur-sm rounded-2xl overflow-hidden border border-secondary/20 hover:border-secondary/40 transition-all hover:scale-105 hover:shadow-2xl glow"
                 >
                   {/* Program Header */}
-                  <div
-                    className="h-40 flex items-center justify-center relative"
-                    style={{ backgroundColor: program.color }}
-                  >
-                    <div className="text-center text-background">
-                      <div className="text-2xl mb-2">{program.title}</div>
-                      <div className="text-sm opacity-90">{program.duration_months} months</div>
+                  <div className="relative h-40 bg-gradient-to-r from-secondary/20 via-primary/20 to-accent/20 flex items-center justify-center">
+                    <div className="text-center">
+                      <div className="text-3xl mb-2">🎯</div>
+                      <p className="text-sm font-medium text-foreground/80">{program.title.split(' ')[0]}</p>
                     </div>
-                    {program.is_featured && (
-                      <div className="absolute top-4 right-4 bg-yellow-500 text-black px-3 py-1 rounded-full text-xs font-bold">
-                        ⭐ Featured
+
+                    {/* Badges */}
+                    <div className="absolute top-3 left-3 flex gap-2">
+                      {program.is_featured && (
+                        <span className="bg-yellow-500 text-black px-2 py-1 rounded-full text-xs font-bold border border-yellow-400">
+                          ⭐ Featured
+                        </span>
+                      )}
+                      {program.is_on_promo && program.promo_amount && (
+                        <span className="bg-primary text-background px-2 py-1 rounded-full text-xs font-bold border border-primary/50">
+                          🔥 SALE
+                        </span>
+                      )}
+                      <span className="bg-secondary/20 text-secondary px-2 py-1 rounded-full text-xs font-semibold border border-secondary/30">
+                        {program.difficulty}
+                      </span>
+                    </div>
+
+                    {/* Rating */}
+                    <div className="absolute top-3 right-3 bg-background/90 backdrop-blur-sm px-2 py-1 rounded-full border border-secondary/20">
+                      <div className="flex items-center gap-1">
+                        <span className="text-yellow-400 text-xs">⭐</span>
+                        <span className="text-xs font-semibold text-foreground">{rating}</span>
                       </div>
-                    )}
+                    </div>
                   </div>
 
                   {/* Program Content */}
                   <div className="p-6">
                     {/* Title */}
-                    <h3 className="text-xl font-bold text-foreground mb-3 font-display group-hover:text-secondary transition-colors line-clamp-2">
+                    <h3 className="text-xl font-bold text-foreground mb-2 line-clamp-2 group-hover:text-secondary transition-colors font-display">
                       {program.title}
                     </h3>
 
                     {/* Description */}
-                    <p className="text-text-muted text-sm mb-4 line-clamp-3">
+                    <p className="text-text-muted text-sm mb-4 line-clamp-2">
                       {program.short_description || program.description}
                     </p>
 
-                    {/* Meta Info */}
-                    <div className="flex items-center justify-between text-xs text-text-muted mb-4">
-                      <div className="flex items-center gap-4">
-                        <span className="flex items-center gap-1">
-                          <span>📚</span>
-                          <span>{program.courses_count || 0} courses</span>
-                        </span>
-                        <span className={`px-2 py-1 rounded-full border text-xs ${getDifficultyColor(program.difficulty)}`}>
-                          {program.difficulty}
-                        </span>
-                      </div>
+                    {/* Social Proof & Meta */}
+                    <div className="flex items-center justify-between mb-4 text-xs text-text-muted">
+                      <span className="flex items-center gap-1">
+                        👥 {enrolledCount} students
+                      </span>
+                      <span className="flex items-center gap-1">
+                        📚 {program.courses_count || 0} courses
+                      </span>
+                    </div>
+
+                    {/* Duration Badge */}
+                    <div className="inline-block px-3 py-1 bg-secondary/10 border border-secondary/20 text-secondary rounded-full text-xs font-medium mb-4">
+                      ⏱️ {program.duration_months} months
                     </div>
 
                     {/* Pricing */}
-                    <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center justify-between mb-4">
                       <div className="flex flex-col">
-                        {discount > 0 ? (
-                          <>
+                        {price > 0 ? (
+                          discount > 0 ? (
+                            <>
+                              <div className="flex items-center gap-2">
+                                <span className="text-2xl font-bold text-secondary">
+                                  £{(finalPrice / 100).toFixed(2)}
+                                </span>
+                                <span className="text-sm text-text-muted line-through">
+                                  £{(price / 100).toFixed(2)}
+                                </span>
+                              </div>
+                              <span className="text-xs text-primary font-semibold">
+                                Save £{((price - finalPrice) / 100).toFixed(2)}
+                              </span>
+                            </>
+                          ) : (
                             <span className="text-2xl font-bold text-secondary">
-                              ${(finalPrice / 100).toFixed(2)}
+                              £{(price / 100).toFixed(2)}
                             </span>
-                            <span className="text-sm text-text-muted line-through">
-                              ${(price / 100).toFixed(2)}
-                            </span>
-                          </>
-                        ) : price > 0 ? (
-                          <span className="text-2xl font-bold text-secondary">
-                            ${(price / 100).toFixed(2)}
-                          </span>
+                          )
                         ) : (
-                          <span className="text-lg font-bold text-green-500">
-                            Free
-                          </span>
+                          <span className="text-2xl font-bold text-accent">Free</span>
                         )}
                       </div>
-                      <Link
-                        href={`/programs/${program.id}`}
-                        className="text-secondary hover:text-secondary-dark font-medium text-sm transition-colors"
-                      >
-                        View Details →
-                      </Link>
+
+                      {/* Urgency indicator */}
+                      <div className="text-right">
+                        <span className="text-xs text-accent font-semibold bg-accent/10 px-2 py-1 rounded-full border border-accent/20">
+                          ⚡ In Demand
+                        </span>
+                      </div>
                     </div>
 
-                    {/* Action Button */}
-                    <button
-                      onClick={() => handleAddToCart(program)}
-                      className="w-full py-3 rounded-xl font-semibold transition-all hover:scale-105 bg-secondary hover:bg-secondary-dark text-background glow"
-                    >
-                      {price > 0 ? 'Add to Cart' : 'Enroll Free'}
-                    </button>
+                    {/* Action Buttons */}
+                    <div className="flex gap-2">
+                      <Link
+                        href={`/programs/${program.id}`}
+                        className="flex-1 bg-surface-light hover:bg-surface border border-secondary/30 text-secondary py-2 px-4 rounded-lg font-medium text-sm transition-all hover:border-secondary/60 text-center"
+                      >
+                        View Details
+                      </Link>
+                      <button
+                        onClick={() => handleAddToCart(program)}
+                        className="flex-1 bg-secondary hover:bg-secondary-dark text-background py-2 px-4 rounded-lg font-semibold text-sm transition-all hover:scale-105 glow"
+                      >
+                        {price > 0 ? 'Add to Cart' : 'Enroll Free'}
+                      </button>
+                    </div>
                   </div>
                 </div>
               );
@@ -311,21 +373,23 @@ const ProgramsPage = () => {
           </div>
         )}
 
-        {/* Pagination */}
+        {/* Enhanced Pagination */}
         {programs.length >= 12 && (
           <div className="mt-16 flex justify-center items-center gap-6">
             <button
               onClick={() => setPage(Math.max(0, page - 1))}
               disabled={page === 0}
-              className="px-6 py-3 border border-secondary/30 text-secondary rounded-xl hover:bg-secondary/10 disabled:opacity-50 disabled:cursor-not-allowed transition-all hover:scale-105"
+              className="px-6 py-3 border border-secondary/30 text-secondary rounded-xl hover:bg-secondary/10 disabled:opacity-50 disabled:cursor-not-allowed transition-all hover:scale-105 glow"
             >
               ← Previous
             </button>
-            <span className="text-foreground font-medium">Page {page + 1}</span>
+            <div className="bg-surface/80 backdrop-blur-sm rounded-xl px-6 py-3 border border-secondary/20">
+              <span className="text-foreground font-semibold">Page {page + 1}</span>
+            </div>
             <button
               onClick={() => setPage(page + 1)}
               disabled={programs.length < 12}
-              className="px-6 py-3 border border-secondary/30 text-secondary rounded-xl hover:bg-secondary/10 disabled:opacity-50 disabled:cursor-not-allowed transition-all hover:scale-105"
+              className="px-6 py-3 border border-secondary/30 text-secondary rounded-xl hover:bg-secondary/10 disabled:opacity-50 disabled:cursor-not-allowed transition-all hover:scale-105 glow"
             >
               Next →
             </button>

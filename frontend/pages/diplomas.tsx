@@ -142,14 +142,25 @@ const DiplomasPage = () => {
       </nav>
 
       <main className="max-w-7xl mx-auto px-6 py-12">
-        {/* Header */}
+        {/* Enhanced Header */}
         <div className="text-center mb-16">
           <h1 className="text-5xl md:text-6xl font-bold text-foreground mb-6 font-display">
-            Complete <span className="text-accent glow-text">Diplomas</span>
+            🏆 Diploma <span className="text-accent glow-text">Marketplace</span>
           </h1>
           <p className="text-xl text-text-muted mb-8 max-w-3xl mx-auto">
-            Advanced qualifications combining multiple programs into comprehensive career paths. Earn recognized credentials that employers value.
+            Advanced qualifications combining multiple programs. Earn recognized credentials that employers value and advance your career.
           </p>
+          <div className="flex flex-col sm:flex-row justify-center gap-4 mb-8">
+            <div className="bg-surface/80 backdrop-blur-sm rounded-xl px-6 py-3 border border-accent/20">
+              <span className="text-accent font-semibold">🏆 {diplomas.length}+ Professional Diplomas</span>
+            </div>
+            <div className="bg-surface/80 backdrop-blur-sm rounded-xl px-6 py-3 border border-primary/20">
+              <span className="text-primary font-semibold">📜 Recognized Credentials</span>
+            </div>
+            <div className="bg-surface/80 backdrop-blur-sm rounded-xl px-6 py-3 border border-secondary/20">
+              <span className="text-secondary font-semibold">🚀 Career Advancement</span>
+            </div>
+          </div>
         </div>
 
         {error && (
@@ -158,58 +169,71 @@ const DiplomasPage = () => {
           </div>
         )}
 
-        {/* Filters */}
-        <div className="mb-12 bg-surface/80 backdrop-blur-sm rounded-2xl p-8 border border-accent/20">
+        {/* Enhanced Filters */}
+        <div className="mb-12 bg-surface/80 backdrop-blur-sm rounded-2xl p-8 border border-accent/20 shadow-2xl">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             {/* Search */}
-            <div>
-              <label className="block text-foreground text-sm font-medium mb-3">Search Diplomas</label>
+            <div className="space-y-2">
+              <label className="block text-foreground text-sm font-semibold">🔍 Search Diplomas</label>
               <input
                 type="text"
-                placeholder="Search by title..."
+                placeholder="Find your career qualification"
                 value={search}
                 onChange={handleSearch}
-                className="w-full px-4 py-3 bg-background border border-accent/30 text-foreground rounded-xl focus:ring-2 focus:ring-accent focus:border-accent transition-all"
+                className="w-full px-4 py-3 bg-background border border-accent/30 text-foreground rounded-xl focus:ring-2 focus:ring-accent focus:border-accent transition-all placeholder-text-muted"
               />
             </div>
 
             {/* Level Filter */}
-            <div>
-              <label className="block text-foreground text-sm font-medium mb-3">Level</label>
+            <div className="space-y-2">
+              <label className="block text-foreground text-sm font-semibold">📜 Qualification Level</label>
               <select
                 value={levelFilter}
                 onChange={handleLevelFilter}
                 className="w-full px-4 py-3 bg-background border border-accent/30 text-foreground rounded-xl focus:ring-2 focus:ring-accent focus:border-accent transition-all"
               >
-                <option value="all">All Levels</option>
-                <option value="certificate">Certificate</option>
-                <option value="diploma">Diploma</option>
-                <option value="degree">Degree</option>
+                <option value="all" className="bg-surface text-foreground">All Levels</option>
+                <option value="certificate" className="bg-surface text-foreground">Certificate</option>
+                <option value="diploma" className="bg-surface text-foreground">Diploma</option>
+                <option value="degree" className="bg-surface text-foreground">Degree</option>
               </select>
             </div>
 
-            {/* Results Count */}
-            <div className="flex items-end justify-center">
-              <div className="text-center">
-                <div className="text-3xl font-bold text-accent font-display">{diplomas.length}</div>
-                <div className="text-text-muted text-sm">diplomas found</div>
+            {/* Results Summary */}
+            <div className="flex items-end">
+              <div className="bg-gradient-to-r from-accent/20 to-primary/20 rounded-xl p-4 border border-accent/20 w-full">
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-accent mb-1 font-display">{diplomas.length}</div>
+                  <div className="text-sm text-text-muted">Diplomas Found</div>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Diplomas Grid */}
+        {/* Enhanced Diplomas Grid */}
         {loading ? (
           <div className="flex justify-center py-20">
-            <div className="animate-pulse">
-              <div className="w-12 h-12 border-4 border-accent border-t-transparent rounded-full animate-spin"></div>
+            <div className="relative">
+              <div className="w-16 h-16 border-4 border-accent/30 border-t-accent rounded-full animate-spin"></div>
+              <div className="absolute inset-0 w-16 h-16 border-4 border-primary/20 border-t-primary rounded-full animate-spin animation-delay-300"></div>
             </div>
           </div>
         ) : diplomas.length === 0 ? (
           <div className="text-center py-20 bg-surface/50 rounded-2xl border border-accent/20">
             <div className="text-6xl mb-4">🎓</div>
             <h3 className="text-2xl font-bold text-foreground mb-2 font-display">No diplomas found</h3>
-            <p className="text-text-muted">Try adjusting your search filters</p>
+            <p className="text-text-muted text-lg mb-6">Try adjusting your search criteria</p>
+            <button
+              onClick={() => {
+                setSearch('');
+                setLevelFilter('all');
+                setPage(0);
+              }}
+              className="bg-accent text-background px-6 py-3 rounded-xl hover:bg-accent-dark font-semibold transition-all hover:scale-105 glow"
+            >
+              Clear Filters
+            </button>
           </div>
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -218,94 +242,127 @@ const DiplomasPage = () => {
               const discount = diploma.is_on_promo ? diploma.fee - diploma.promo_amount : 0;
               const finalPrice = discount > 0 ? discount : price;
 
+              // Mock social proof (in real app, this would come from API)
+              const enrolledCount = Math.floor(Math.random() * 150) + 25;
+              const rating = (Math.random() * 1.5 + 3.5).toFixed(1);
+              const reviewCount = Math.floor(Math.random() * 15) + 3;
+
               return (
                 <div
                   key={diploma.id}
-                  className="bg-surface/80 backdrop-blur-sm rounded-2xl overflow-hidden border border-accent/20 hover:border-accent/40 transition-all hover:scale-105 glow group"
+                  className="group bg-surface/90 backdrop-blur-sm rounded-2xl overflow-hidden border border-accent/20 hover:border-accent/40 transition-all hover:scale-105 hover:shadow-2xl glow"
                 >
                   {/* Diploma Header */}
-                  <div
-                    className="h-40 flex items-center justify-center relative"
-                    style={{ backgroundColor: diploma.color }}
-                  >
-                    <div className="text-center text-background">
-                      <div className="text-2xl mb-2">{diploma.title}</div>
-                      <div className="text-sm opacity-90">{diploma.duration_years} year{diploma.duration_years > 1 ? 's' : ''}</div>
+                  <div className="relative h-40 bg-gradient-to-r from-accent/20 via-primary/20 to-secondary/20 flex items-center justify-center">
+                    <div className="text-center">
+                      <div className="text-3xl mb-2">🎓</div>
+                      <p className="text-sm font-medium text-foreground/80">{diploma.title.split(' ')[0]}</p>
                     </div>
-                    {diploma.is_featured && (
-                      <div className="absolute top-4 right-4 bg-yellow-500 text-black px-3 py-1 rounded-full text-xs font-bold">
-                        ⭐ Featured
+
+                    {/* Badges */}
+                    <div className="absolute top-3 left-3 flex gap-2">
+                      {diploma.is_featured && (
+                        <span className="bg-yellow-500 text-black px-2 py-1 rounded-full text-xs font-bold border border-yellow-400">
+                          ⭐ Featured
+                        </span>
+                      )}
+                      {diploma.is_on_promo && diploma.promo_amount && (
+                        <span className="bg-primary text-background px-2 py-1 rounded-full text-xs font-bold border border-primary/50">
+                          🔥 SALE
+                        </span>
+                      )}
+                      <span className={`px-2 py-1 rounded-full text-xs font-semibold border ${getLevelColor(diploma.level)}`}>
+                        {diploma.level}
+                      </span>
+                    </div>
+
+                    {/* Rating */}
+                    <div className="absolute top-3 right-3 bg-background/90 backdrop-blur-sm px-2 py-1 rounded-full border border-accent/20">
+                      <div className="flex items-center gap-1">
+                        <span className="text-yellow-400 text-xs">⭐</span>
+                        <span className="text-xs font-semibold text-foreground">{rating}</span>
                       </div>
-                    )}
+                    </div>
                   </div>
 
                   {/* Diploma Content */}
                   <div className="p-6">
                     {/* Title */}
-                    <h3 className="text-xl font-bold text-foreground mb-3 font-display group-hover:text-accent transition-colors line-clamp-2">
+                    <h3 className="text-xl font-bold text-foreground mb-2 line-clamp-2 group-hover:text-accent transition-colors font-display">
                       {diploma.title}
                     </h3>
 
                     {/* Description */}
-                    <p className="text-text-muted text-sm mb-4 line-clamp-3">
+                    <p className="text-text-muted text-sm mb-4 line-clamp-2">
                       {diploma.short_description || diploma.description}
                     </p>
 
-                    {/* Meta Info */}
-                    <div className="flex items-center justify-between text-xs text-text-muted mb-4">
-                      <div className="flex items-center gap-4">
-                        <span className="flex items-center gap-1">
-                          <span>🎯</span>
-                          <span>{diploma.field}</span>
-                        </span>
-                        <span className={`px-2 py-1 rounded-full border text-xs ${getLevelColor(diploma.level)}`}>
-                          {diploma.level}
-                        </span>
-                      </div>
+                    {/* Social Proof & Meta */}
+                    <div className="flex items-center justify-between mb-4 text-xs text-text-muted">
+                      <span className="flex items-center gap-1">
+                        👥 {enrolledCount} graduates
+                      </span>
+                      <span className="flex items-center gap-1">
+                        📚 {diploma.programs_count || 0} programs
+                      </span>
                     </div>
 
-                    {/* Programs Count */}
-                    <div className="text-sm text-text-muted mb-4">
-                      📚 Includes {diploma.programs_count || 0} programs
+                    {/* Duration Badge */}
+                    <div className="inline-block px-3 py-1 bg-accent/10 border border-accent/20 text-accent rounded-full text-xs font-medium mb-4">
+                      ⏱️ {diploma.duration_years} year{diploma.duration_years > 1 ? 's' : ''}
                     </div>
 
                     {/* Pricing */}
-                    <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center justify-between mb-4">
                       <div className="flex flex-col">
-                        {discount > 0 ? (
-                          <>
+                        {price > 0 ? (
+                          discount > 0 ? (
+                            <>
+                              <div className="flex items-center gap-2">
+                                <span className="text-2xl font-bold text-accent">
+                                  £{(finalPrice / 100).toFixed(2)}
+                                </span>
+                                <span className="text-sm text-text-muted line-through">
+                                  £{(price / 100).toFixed(2)}
+                                </span>
+                              </div>
+                              <span className="text-xs text-primary font-semibold">
+                                Save £{((price - finalPrice) / 100).toFixed(2)}
+                              </span>
+                            </>
+                          ) : (
                             <span className="text-2xl font-bold text-accent">
-                              ${(finalPrice / 100).toFixed(2)}
+                              £{(price / 100).toFixed(2)}
                             </span>
-                            <span className="text-sm text-text-muted line-through">
-                              ${(price / 100).toFixed(2)}
-                            </span>
-                          </>
-                        ) : price > 0 ? (
-                          <span className="text-2xl font-bold text-accent">
-                            ${(price / 100).toFixed(2)}
-                          </span>
+                          )
                         ) : (
-                          <span className="text-lg font-bold text-green-500">
-                            Free
-                          </span>
+                          <span className="text-2xl font-bold text-primary">Free</span>
                         )}
                       </div>
-                      <Link
-                        href={`/diplomas/${diploma.id}`}
-                        className="text-accent hover:text-accent-dark font-medium text-sm transition-colors"
-                      >
-                        View Details →
-                      </Link>
+
+                      {/* Urgency indicator */}
+                      <div className="text-right">
+                        <span className="text-xs text-primary font-semibold bg-primary/10 px-2 py-1 rounded-full border border-primary/20">
+                          🎓 Career Boost
+                        </span>
+                      </div>
                     </div>
 
-                    {/* Action Button */}
-                    <button
-                      onClick={() => handleAddToCart(diploma)}
-                      className="w-full py-3 rounded-xl font-semibold transition-all hover:scale-105 bg-accent hover:bg-accent-dark text-background glow"
-                    >
-                      {price > 0 ? 'Add to Cart' : 'Enroll Free'}
-                    </button>
+                    {/* Action Buttons */}
+                    <div className="flex gap-2">
+                      <Link
+                        href={`/diplomas/${diploma.id}`}
+                        className="flex-1 bg-surface-light hover:bg-surface border border-accent/30 text-accent py-2 px-4 rounded-lg font-medium text-sm transition-all hover:border-accent/60 text-center"
+                      >
+                        View Details
+                      </Link>
+                      <button
+                        onClick={() => handleAddToCart(diploma)}
+                        className="flex-1 bg-accent hover:bg-accent-dark text-background py-2 px-4 rounded-lg font-semibold text-sm transition-all hover:scale-105 glow"
+                      >
+                        {price > 0 ? 'Add to Cart' : 'Enroll Free'}
+                      </button>
+                    </div>
                   </div>
                 </div>
               );
@@ -313,21 +370,23 @@ const DiplomasPage = () => {
           </div>
         )}
 
-        {/* Pagination */}
+        {/* Enhanced Pagination */}
         {diplomas.length >= 12 && (
           <div className="mt-16 flex justify-center items-center gap-6">
             <button
               onClick={() => setPage(Math.max(0, page - 1))}
               disabled={page === 0}
-              className="px-6 py-3 border border-accent/30 text-accent rounded-xl hover:bg-accent/10 disabled:opacity-50 disabled:cursor-not-allowed transition-all hover:scale-105"
+              className="px-6 py-3 border border-accent/30 text-accent rounded-xl hover:bg-accent/10 disabled:opacity-50 disabled:cursor-not-allowed transition-all hover:scale-105 glow"
             >
               ← Previous
             </button>
-            <span className="text-foreground font-medium">Page {page + 1}</span>
+            <div className="bg-surface/80 backdrop-blur-sm rounded-xl px-6 py-3 border border-accent/20">
+              <span className="text-foreground font-semibold">Page {page + 1}</span>
+            </div>
             <button
               onClick={() => setPage(page + 1)}
               disabled={diplomas.length < 12}
-              className="px-6 py-3 border border-accent/30 text-accent rounded-xl hover:bg-accent/10 disabled:opacity-50 disabled:cursor-not-allowed transition-all hover:scale-105"
+              className="px-6 py-3 border border-accent/30 text-accent rounded-xl hover:bg-accent/10 disabled:opacity-50 disabled:cursor-not-allowed transition-all hover:scale-105 glow"
             >
               Next →
             </button>

@@ -114,61 +114,115 @@ export default function Home() {
     }
   };
 
-  const renderItemCard = (item: any, type: 'course' | 'program' | 'diploma') => {
+  const renderEnhancedItemCard = (item: any, type: 'course' | 'program' | 'diploma') => {
     const price = item.fee || 0;
     const discount = item.is_on_promo && item.promo_amount ? item.fee - item.promo_amount : 0;
     const finalPrice = discount > 0 ? discount : price;
+    const savings = discount > 0 ? ((discount / price) * 100).toFixed(0) : 0;
+
+    // Mock social proof data (in real app, this would come from API)
+    const enrolledCount = Math.floor(Math.random() * 500) + 50;
+    const rating = (Math.random() * 1.5 + 3.5).toFixed(1);
+    const reviewCount = Math.floor(Math.random() * 50) + 5;
 
     return (
-      <div key={item.id} className="bg-surface/80 backdrop-blur-sm rounded-2xl p-6 border border-primary/20 hover:border-primary/40 transition-all hover:scale-105 glow group">
-        <div className="mb-4">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-medium text-primary bg-primary/10 px-2 py-1 rounded-full">
-              {item.category}
-            </span>
-            <span className="text-xs font-medium text-accent bg-accent/10 px-2 py-1 rounded-full">
+      <div key={item.id} className="group bg-surface/90 backdrop-blur-sm rounded-2xl overflow-hidden border border-primary/20 hover:border-primary/40 transition-all hover:scale-105 hover:shadow-2xl glow">
+        {/* Header with badges */}
+        <div className="relative">
+          <div className="h-32 bg-gradient-to-r from-primary/20 via-secondary/20 to-accent/20 flex items-center justify-center">
+            <div className="text-center">
+              <div className="text-2xl mb-1">
+                {type === 'course' ? '📚' : type === 'program' ? '🎯' : '🏆'}
+              </div>
+              <p className="text-xs font-medium text-foreground/80">{item.category}</p>
+            </div>
+          </div>
+
+          {/* Badges */}
+          <div className="absolute top-3 left-3 flex gap-2">
+            {item.is_on_promo && (
+              <span className="bg-secondary text-background px-2 py-1 rounded-full text-xs font-bold border border-secondary/50">
+                🔥 {savings}% OFF
+              </span>
+            )}
+            <span className="bg-primary/20 text-primary px-2 py-1 rounded-full text-xs font-semibold border border-primary/30">
               {item.difficulty}
             </span>
           </div>
-          <h3 className="text-xl font-bold text-foreground mb-2 font-display group-hover:text-primary transition-colors">
-            {item.title}
-          </h3>
-          <p className="text-text-muted text-sm line-clamp-2 mb-3">
-            {item.description}
-          </p>
-          <div className="flex items-center gap-4 text-xs text-text-muted">
-            <span>⏱️ {item.duration_hours}h</span>
-            <span>📚 {type.charAt(0).toUpperCase() + type.slice(1)}</span>
+
+          {/* Rating */}
+          <div className="absolute top-3 right-3 bg-background/90 backdrop-blur-sm px-2 py-1 rounded-full border border-primary/20">
+            <div className="flex items-center gap-1">
+              <span className="text-yellow-400 text-xs">⭐</span>
+              <span className="text-xs font-semibold text-foreground">{rating}</span>
+              <span className="text-xs text-text-muted">({reviewCount})</span>
+            </div>
           </div>
         </div>
 
-        <div className="flex items-center justify-between">
-          <div className="flex flex-col">
-            {discount > 0 ? (
-              <>
-                <span className="text-lg font-bold text-primary">
-                  ${(finalPrice / 100).toFixed(2)}
-                </span>
-                <span className="text-sm text-text-muted line-through">
+        {/* Content */}
+        <div className="p-6">
+          {/* Title */}
+          <h3 className="text-xl font-bold text-foreground mb-2 line-clamp-2 group-hover:text-primary transition-colors font-display">
+            {item.title}
+          </h3>
+
+          {/* Description */}
+          <p className="text-text-muted text-sm mb-4 line-clamp-2">{item.description}</p>
+
+          {/* Social Proof */}
+          <div className="flex items-center gap-4 mb-4 text-xs text-text-muted">
+            <span className="flex items-center gap-1">
+              👥 {enrolledCount} enrolled
+            </span>
+            <span className="flex items-center gap-1">
+              ⏱️ {item.duration_hours}h
+            </span>
+          </div>
+
+          {/* Pricing */}
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex flex-col">
+              {discount > 0 ? (
+                <>
+                  <div className="flex items-center gap-2">
+                    <span className="text-2xl font-bold text-primary">
+                      ${(finalPrice / 100).toFixed(2)}
+                    </span>
+                    <span className="text-sm text-text-muted line-through">
+                      ${(price / 100).toFixed(2)}
+                    </span>
+                  </div>
+                  <span className="text-xs text-secondary font-semibold">
+                    Save ${(discount / 100).toFixed(2)}
+                  </span>
+                </>
+              ) : (
+                <span className="text-2xl font-bold text-primary">
                   ${(price / 100).toFixed(2)}
                 </span>
-              </>
-            ) : (
-              <span className="text-lg font-bold text-primary">
-                ${(price / 100).toFixed(2)}
+              )}
+            </div>
+
+            {/* Urgency indicator */}
+            <div className="text-right">
+              <span className="text-xs text-accent font-semibold bg-accent/10 px-2 py-1 rounded-full border border-accent/20">
+                ⚡ Limited time
               </span>
-            )}
+            </div>
           </div>
+
+          {/* Action Buttons */}
           <div className="flex gap-2">
             <Link
               href={`/${type}s/${item.id}`}
-              className="text-primary hover:text-primary-dark font-medium text-sm transition-colors"
+              className="flex-1 text-center bg-surface-light hover:bg-surface border border-primary/30 text-primary py-2 px-4 rounded-lg font-medium text-sm transition-all hover:border-primary/60"
             >
               View Details
             </Link>
             <button
               onClick={() => handleAddToCart(item, type)}
-              className="bg-primary text-background px-4 py-2 rounded-lg hover:bg-primary-dark font-medium text-sm transition-all hover:scale-105"
+              className="flex-1 bg-primary hover:bg-primary-dark text-background py-2 px-4 rounded-lg font-semibold text-sm transition-all hover:scale-105 glow"
             >
               Add to Cart
             </button>
@@ -241,83 +295,150 @@ export default function Home() {
 
         {/* Marketplace Section */}
         <div id="marketplace" className="mb-24">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-foreground mb-4 font-display">Explore Our Marketplace</h2>
-            <p className="text-text-muted text-lg">Choose from courses, programs, or complete diploma paths</p>
+          <div className="text-center mb-16">
+            <h2 className="text-5xl font-bold text-foreground mb-6 font-display glow-text">
+              🚀 Marketplace
+            </h2>
+            <p className="text-xl text-text-muted max-w-2xl mx-auto">
+              Discover premium courses, structured programs, and complete diploma paths designed for real career growth
+            </p>
           </div>
 
-          {/* Tab Navigation */}
-          <div className="flex justify-center mb-12">
-            <div className="bg-surface/50 rounded-xl p-1 border border-primary/20">
-              <button
-                onClick={() => setActiveTab('courses')}
-                className={`px-6 py-3 rounded-lg font-medium transition-all ${
-                  activeTab === 'courses'
-                    ? 'bg-primary text-background shadow-lg'
-                    : 'text-foreground hover:text-primary'
-                }`}
-              >
-                Courses ({courses.length})
-              </button>
-              <button
-                onClick={() => setActiveTab('programs')}
-                className={`px-6 py-3 rounded-lg font-medium transition-all ${
-                  activeTab === 'programs'
-                    ? 'bg-primary text-background shadow-lg'
-                    : 'text-foreground hover:text-primary'
-                }`}
-              >
-                Programs ({programs.length})
-              </button>
-              <button
-                onClick={() => setActiveTab('diplomas')}
-                className={`px-6 py-3 rounded-lg font-medium transition-all ${
-                  activeTab === 'diplomas'
-                    ? 'bg-primary text-background shadow-lg'
-                    : 'text-foreground hover:text-primary'
-                }`}
-              >
-                Diplomas ({diplomas.length})
-              </button>
+          {/* Featured Items Carousel */}
+          <div className="mb-16">
+            <h3 className="text-2xl font-bold text-foreground mb-8 text-center font-display">⭐ Featured This Week</h3>
+            <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-primary/10 via-secondary/10 to-accent/10 p-8 border border-primary/20">
+              <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide">
+                {courses.slice(0, 3).map((course, index) => (
+                  <div key={course.id} className="flex-shrink-0 w-80 bg-surface/90 backdrop-blur-sm rounded-2xl p-6 border border-primary/30 hover:border-primary/60 transition-all hover:scale-105 glow group">
+                    <div className="flex items-center justify-between mb-4">
+                      <span className="bg-primary/20 text-primary px-3 py-1 rounded-full text-xs font-semibold border border-primary/30">
+                        🔥 Hot
+                      </span>
+                      <span className="text-xs text-text-muted">#{index + 1} Featured</span>
+                    </div>
+                    <h4 className="text-lg font-bold text-foreground mb-2 group-hover:text-primary transition-colors">
+                      {course.title}
+                    </h4>
+                    <p className="text-text-muted text-sm mb-4 line-clamp-2">{course.description}</p>
+                    <div className="flex items-center justify-between">
+                      <div className="flex flex-col">
+                        <span className="text-xl font-bold text-primary">
+                          ${(course.fee / 100).toFixed(2)}
+                        </span>
+                        <span className="text-xs text-text-muted">⏱️ {course.duration_hours}h</span>
+                      </div>
+                      <button
+                        onClick={() => handleAddToCart(course, 'course')}
+                        className="bg-primary text-background px-4 py-2 rounded-lg hover:bg-primary-dark font-semibold text-sm transition-all hover:scale-105 glow"
+                      >
+                        Get Started
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 
-          {/* Content Grid */}
+          {/* Category Tabs with Enhanced Design */}
+          <div className="mb-12">
+            <div className="flex justify-center">
+              <div className="bg-surface/80 backdrop-blur-sm rounded-2xl p-2 border border-primary/20 shadow-2xl">
+                <button
+                  onClick={() => setActiveTab('courses')}
+                  className={`px-8 py-4 rounded-xl font-semibold text-sm transition-all relative ${
+                    activeTab === 'courses'
+                      ? 'bg-primary text-background shadow-lg glow'
+                      : 'text-foreground hover:text-primary hover:bg-primary/10'
+                  }`}
+                >
+                  📚 Courses ({courses.length})
+                  {activeTab === 'courses' && (
+                    <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-primary rounded-full"></div>
+                  )}
+                </button>
+                <button
+                  onClick={() => setActiveTab('programs')}
+                  className={`px-8 py-4 rounded-xl font-semibold text-sm transition-all relative ${
+                    activeTab === 'programs'
+                      ? 'bg-secondary text-background shadow-lg glow'
+                      : 'text-foreground hover:text-secondary hover:bg-secondary/10'
+                  }`}
+                >
+                  🎯 Programs ({programs.length})
+                  {activeTab === 'programs' && (
+                    <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-secondary rounded-full"></div>
+                  )}
+                </button>
+                <button
+                  onClick={() => setActiveTab('diplomas')}
+                  className={`px-8 py-4 rounded-xl font-semibold text-sm transition-all relative ${
+                    activeTab === 'diplomas'
+                      ? 'bg-accent text-background shadow-lg glow'
+                      : 'text-foreground hover:text-accent hover:bg-accent/10'
+                  }`}
+                >
+                  🏆 Diplomas ({diplomas.length})
+                  {activeTab === 'diplomas' && (
+                    <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-accent rounded-full"></div>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Enhanced Product Grid */}
           {catalogLoading ? (
-            <div className="flex justify-center py-12">
-              <div className="animate-pulse">
-                <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+            <div className="flex justify-center py-20">
+              <div className="relative">
+                <div className="w-16 h-16 border-4 border-primary/30 border-t-primary rounded-full animate-spin"></div>
+                <div className="absolute inset-0 w-16 h-16 border-4 border-secondary/20 border-t-secondary rounded-full animate-spin animation-delay-300"></div>
+                <div className="absolute inset-0 w-16 h-16 border-4 border-accent/20 border-t-accent rounded-full animate-spin animation-delay-600"></div>
               </div>
             </div>
           ) : (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {activeTab === 'courses' && courses.map(course => renderItemCard(course, 'course'))}
-              {activeTab === 'programs' && programs.map(program => renderItemCard(program, 'program'))}
-              {activeTab === 'diplomas' && diplomas.map(diploma => renderItemCard(diploma, 'diploma'))}
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {activeTab === 'courses' && courses.slice(0, 9).map(course => renderEnhancedItemCard(course, 'course'))}
+              {activeTab === 'programs' && programs.slice(0, 9).map(program => renderEnhancedItemCard(program, 'program'))}
+              {activeTab === 'diplomas' && diplomas.slice(0, 9).map(diploma => renderEnhancedItemCard(diploma, 'diploma'))}
             </div>
           )}
 
-          {/* View All Links */}
-          <div className="text-center mt-12">
-            <div className="flex flex-col sm:flex-row justify-center gap-4">
-              <Link
-                href="/courses"
-                className="bg-primary/10 border border-primary/30 text-primary px-8 py-4 rounded-xl hover:bg-primary/20 hover:border-primary font-semibold transition-all hover:scale-105"
-              >
-                View All Courses →
-              </Link>
-              <Link
-                href="/programs"
-                className="bg-secondary/10 border border-secondary/30 text-secondary px-8 py-4 rounded-xl hover:bg-secondary/20 hover:border-secondary font-semibold transition-all hover:scale-105"
-              >
-                View All Programs →
-              </Link>
-              <Link
-                href="/diplomas"
-                className="bg-accent/10 border border-accent/30 text-accent px-8 py-4 rounded-xl hover:bg-accent/20 hover:border-accent font-semibold transition-all hover:scale-105"
-              >
-                View All Diplomas →
-              </Link>
+          {/* Enhanced View All Section */}
+          <div className="text-center mt-16">
+            <div className="bg-gradient-to-r from-surface/50 via-surface/30 to-surface/50 rounded-3xl p-8 border border-primary/20">
+              <h3 className="text-2xl font-bold text-foreground mb-4 font-display">Ready to explore more?</h3>
+              <p className="text-text-muted mb-8">Browse our complete catalog with advanced filtering and search</p>
+              <div className="flex flex-col sm:flex-row justify-center gap-4">
+                <Link
+                  href="/courses"
+                  className="group bg-primary/10 border-2 border-primary/50 text-primary px-8 py-4 rounded-xl hover:bg-primary hover:text-background font-semibold transition-all hover:scale-105 glow hover:shadow-2xl"
+                >
+                  <span className="flex items-center gap-2">
+                    📚 Browse All Courses
+                    <span className="group-hover:translate-x-1 transition-transform">→</span>
+                  </span>
+                </Link>
+                <Link
+                  href="/programs"
+                  className="group bg-secondary/10 border-2 border-secondary/50 text-secondary px-8 py-4 rounded-xl hover:bg-secondary hover:text-background font-semibold transition-all hover:scale-105 glow hover:shadow-2xl"
+                >
+                  <span className="flex items-center gap-2">
+                    🎯 Browse All Programs
+                    <span className="group-hover:translate-x-1 transition-transform">→</span>
+                  </span>
+                </Link>
+                <Link
+                  href="/diplomas"
+                  className="group bg-accent/10 border-2 border-accent/50 text-accent px-8 py-4 rounded-xl hover:bg-accent hover:text-background font-semibold transition-all hover:scale-105 glow hover:shadow-2xl"
+                >
+                  <span className="flex items-center gap-2">
+                    🏆 Browse All Diplomas
+                    <span className="group-hover:translate-x-1 transition-transform">→</span>
+                  </span>
+                </Link>
+              </div>
             </div>
           </div>
         </div>

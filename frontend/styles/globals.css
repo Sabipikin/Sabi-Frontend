@@ -51,6 +51,25 @@ body {
   background: #0099cc;
 }
 
+/* Hide scrollbar for carousel */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Animation delays */
+.animation-delay-300 {
+  animation-delay: 0.3s;
+}
+
+.animation-delay-600 {
+  animation-delay: 0.6s;
+}
+
 /* Futuristic glow effects */
 .glow {
   box-shadow: 0 0 20px rgba(0, 212, 255, 0.1);

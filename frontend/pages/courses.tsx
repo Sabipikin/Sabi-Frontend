@@ -182,14 +182,25 @@ export default function Courses() {
       </nav>
 
       <main className="max-w-7xl mx-auto px-6 py-12">
-        {/* Header */}
+        {/* Enhanced Header */}
         <div className="text-center mb-16">
           <h1 className="text-5xl md:text-6xl font-bold text-foreground mb-6 font-display">
-            Explore Our <span className="text-primary glow-text">Courses</span>
+            🚀 Course <span className="text-primary glow-text">Marketplace</span>
           </h1>
           <p className="text-xl text-text-muted mb-8 max-w-3xl mx-auto">
-            Discover individual courses designed to build specific skills. Each course is crafted for practical, real-world application.
+            Master real skills with our premium courses. From beginner to advanced, find your perfect learning path with expert guidance.
           </p>
+          <div className="flex flex-col sm:flex-row justify-center gap-4 mb-8">
+            <div className="bg-surface/80 backdrop-blur-sm rounded-xl px-6 py-3 border border-primary/20">
+              <span className="text-primary font-semibold">📚 {courses.length}+ Premium Courses</span>
+            </div>
+            <div className="bg-surface/80 backdrop-blur-sm rounded-xl px-6 py-3 border border-secondary/20">
+              <span className="text-secondary font-semibold">⚡ Hands-on Projects</span>
+            </div>
+            <div className="bg-surface/80 backdrop-blur-sm rounded-xl px-6 py-3 border border-accent/20">
+              <span className="text-accent font-semibold">🎯 Career Focused</span>
+            </div>
+          </div>
         </div>
 
         {error && (
@@ -198,31 +209,31 @@ export default function Courses() {
           </div>
         )}
 
-        {/* Filters */}
-        <div className="mb-12 bg-surface/80 backdrop-blur-sm rounded-2xl p-8 border border-primary/20">
+        {/* Enhanced Filters */}
+        <div className="mb-12 bg-surface/80 backdrop-blur-sm rounded-2xl p-8 border border-primary/20 shadow-2xl">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             {/* Search */}
-            <div>
-              <label className="block text-foreground text-sm font-medium mb-3">Search Courses</label>
+            <div className="space-y-2">
+              <label className="block text-foreground text-sm font-semibold">🔍 Search Courses</label>
               <input
                 type="text"
-                placeholder="Search by title or description..."
+                placeholder="What skill do you want to master?"
                 value={filters.search}
                 onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-                className="w-full px-4 py-3 bg-background border border-primary/30 text-foreground rounded-xl focus:ring-2 focus:ring-primary focus:border-primary transition-all"
+                className="w-full px-4 py-3 bg-background border border-primary/30 text-foreground rounded-xl focus:ring-2 focus:ring-primary focus:border-primary transition-all placeholder-text-muted"
               />
             </div>
 
             {/* Category Filter */}
-            <div>
-              <label className="block text-foreground text-sm font-medium mb-3">Category</label>
+            <div className="space-y-2">
+              <label className="block text-foreground text-sm font-semibold">📂 Category</label>
               <select
                 value={filters.category}
                 onChange={(e) => setFilters({ ...filters, category: e.target.value })}
                 className="w-full px-4 py-3 bg-background border border-primary/30 text-foreground rounded-xl focus:ring-2 focus:ring-primary focus:border-primary transition-all"
               >
                 {categories.map((cat) => (
-                  <option key={cat} value={cat}>
+                  <option key={cat} value={cat} className="bg-surface text-foreground">
                     {cat.charAt(0).toUpperCase() + cat.slice(1)}
                   </option>
                 ))}
@@ -230,46 +241,55 @@ export default function Courses() {
             </div>
 
             {/* Difficulty Filter */}
-            <div>
-              <label className="block text-foreground text-sm font-medium mb-3">Difficulty</label>
+            <div className="space-y-2">
+              <label className="block text-foreground text-sm font-semibold">🎯 Difficulty</label>
               <select
                 value={filters.difficulty}
                 onChange={(e) => setFilters({ ...filters, difficulty: e.target.value })}
                 className="w-full px-4 py-3 bg-background border border-primary/30 text-foreground rounded-xl focus:ring-2 focus:ring-primary focus:border-primary transition-all"
               >
                 {difficulties.map((diff) => (
-                  <option key={diff} value={diff}>
+                  <option key={diff} value={diff} className="bg-surface text-foreground">
                     {diff.charAt(0).toUpperCase() + diff.slice(1)}
                   </option>
                 ))}
               </select>
             </div>
 
-            {/* Results Count */}
-            <div className="flex items-end justify-center">
-              <div className="text-center">
-                <div className="text-3xl font-bold text-primary font-display">{filteredCourses.length}</div>
-                <div className="text-text-muted text-sm">courses found</div>
+            {/* Results Summary */}
+            <div className="flex items-end">
+              <div className="bg-gradient-to-r from-primary/20 to-secondary/20 rounded-xl p-4 border border-primary/20 w-full">
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-primary mb-1 font-display">{filteredCourses.length}</div>
+                  <div className="text-sm text-text-muted">Courses Found</div>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Courses Grid */}
+        {/* Enhanced Courses Grid */}
         {loading ? (
           <div className="flex justify-center py-20">
-            <div className="animate-pulse">
-              <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+            <div className="relative">
+              <div className="w-16 h-16 border-4 border-primary/30 border-t-primary rounded-full animate-spin"></div>
+              <div className="absolute inset-0 w-16 h-16 border-4 border-secondary/20 border-t-secondary rounded-full animate-spin animation-delay-300"></div>
             </div>
           </div>
         ) : filteredCourses.length === 0 ? (
           <div className="text-center py-20 bg-surface/50 rounded-2xl border border-primary/20">
-            <div className="text-6xl mb-4">📚</div>
+            <div className="text-6xl mb-4">🔍</div>
             <h3 className="text-2xl font-bold text-foreground mb-2 font-display">No courses found</h3>
-            <p className="text-text-muted">Try adjusting your search filters</p>
+            <p className="text-text-muted text-lg mb-6">Try adjusting your search criteria</p>
+            <button
+              onClick={() => setFilters({ category: 'all', difficulty: 'all', search: '' })}
+              className="bg-primary text-background px-6 py-3 rounded-xl hover:bg-primary-dark font-semibold transition-all hover:scale-105 glow"
+            >
+              Clear Filters
+            </button>
           </div>
         ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredCourses.map((course) => {
               const isEnrolled = enrolledCourseIds.has(course.id);
               const isEnrolling = enrolling === course.id;
@@ -277,94 +297,127 @@ export default function Courses() {
               const discount = course.is_on_promo && course.promo_amount ? course.fee - course.promo_amount : 0;
               const finalPrice = discount > 0 ? discount : price;
 
+              // Mock social proof (in real app, this would come from API)
+              const enrolledCount = Math.floor(Math.random() * 300) + 20;
+              const rating = (Math.random() * 1.5 + 3.5).toFixed(1);
+              const reviewCount = Math.floor(Math.random() * 30) + 3;
+
               return (
                 <div
                   key={course.id}
-                  className="bg-surface/80 backdrop-blur-sm rounded-2xl overflow-hidden border border-primary/20 hover:border-primary/40 transition-all hover:scale-105 glow group"
+                  className="group bg-surface/90 backdrop-blur-sm rounded-2xl overflow-hidden border border-primary/20 hover:border-primary/40 transition-all hover:scale-105 hover:shadow-2xl glow"
                 >
                   {/* Course Header */}
-                  <div className="h-40 bg-gradient-to-r from-primary via-secondary to-accent flex items-center justify-center relative">
-                    <div className="text-center text-background">
-                      <div className="text-2xl mb-2">{course.category}</div>
-                      <div className="text-sm opacity-90">Level: {course.difficulty}</div>
+                  <div className="relative h-40 bg-gradient-to-r from-primary/20 via-secondary/20 to-accent/20 flex items-center justify-center">
+                    <div className="text-center">
+                      <div className="text-3xl mb-2">📚</div>
+                      <p className="text-sm font-medium text-foreground/80">{course.category}</p>
                     </div>
-                    {isEnrolled && (
-                      <div className="absolute top-4 right-4 bg-green-500 text-white px-3 py-1 rounded-full text-xs font-bold">
-                        ✓ Enrolled
+
+                    {/* Badges */}
+                    <div className="absolute top-3 left-3 flex gap-2">
+                      {course.is_on_promo && course.promo_amount && (
+                        <span className="bg-secondary text-background px-2 py-1 rounded-full text-xs font-bold border border-secondary/50">
+                          🔥 SALE
+                        </span>
+                      )}
+                      <span className="bg-primary/20 text-primary px-2 py-1 rounded-full text-xs font-semibold border border-primary/30">
+                        {course.difficulty}
+                      </span>
+                    </div>
+
+                    {/* Rating */}
+                    <div className="absolute top-3 right-3 bg-background/90 backdrop-blur-sm px-2 py-1 rounded-full border border-primary/20">
+                      <div className="flex items-center gap-1">
+                        <span className="text-yellow-400 text-xs">⭐</span>
+                        <span className="text-xs font-semibold text-foreground">{rating}</span>
                       </div>
-                    )}
+                    </div>
                   </div>
 
                   {/* Course Content */}
                   <div className="p-6">
                     {/* Title */}
-                    <h3 className="text-xl font-bold text-foreground mb-3 font-display group-hover:text-primary transition-colors line-clamp-2">
+                    <h3 className="text-xl font-bold text-foreground mb-2 line-clamp-2 group-hover:text-primary transition-colors font-display">
                       {course.title}
                     </h3>
 
                     {/* Description */}
-                    <p className="text-text-muted text-sm mb-4 line-clamp-3">
-                      {course.description}
-                    </p>
+                    <p className="text-text-muted text-sm mb-4 line-clamp-2">{course.description}</p>
 
-                    {/* Meta Info */}
-                    <div className="flex items-center justify-between text-xs text-text-muted mb-6">
-                      <div className="flex items-center gap-4">
-                        <span className="flex items-center gap-1">
-                          <span>⏱️</span>
-                          <span>{course.duration_hours}h</span>
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <span>📅</span>
-                          <span>{new Date(course.created_at).toLocaleDateString()}</span>
-                        </span>
-                      </div>
+                    {/* Social Proof & Meta */}
+                    <div className="flex items-center justify-between mb-4 text-xs text-text-muted">
+                      <span className="flex items-center gap-1">
+                        👥 {enrolledCount} students
+                      </span>
+                      <span className="flex items-center gap-1">
+                        ⏱️ {course.duration_hours}h
+                      </span>
                     </div>
+
+                    {/* Status Badge */}
+                    {isEnrolled && (
+                      <div className="inline-block px-3 py-1 bg-green-900/30 border border-green-600 text-green-300 rounded-full text-xs font-medium mb-4">
+                        ✓ Enrolled
+                      </div>
+                    )}
 
                     {/* Pricing */}
-                    <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center justify-between mb-4">
                       <div className="flex flex-col">
-                        {discount > 0 ? (
-                          <>
+                        {price > 0 ? (
+                          discount > 0 ? (
+                            <>
+                              <div className="flex items-center gap-2">
+                                <span className="text-2xl font-bold text-primary">
+                                  £{(finalPrice / 100).toFixed(2)}
+                                </span>
+                                <span className="text-sm text-text-muted line-through">
+                                  £{(price / 100).toFixed(2)}
+                                </span>
+                              </div>
+                              <span className="text-xs text-secondary font-semibold">
+                                Save £{((price - finalPrice) / 100).toFixed(2)}
+                              </span>
+                            </>
+                          ) : (
                             <span className="text-2xl font-bold text-primary">
-                              ${(finalPrice / 100).toFixed(2)}
+                              £{(price / 100).toFixed(2)}
                             </span>
-                            <span className="text-sm text-text-muted line-through">
-                              ${(price / 100).toFixed(2)}
-                            </span>
-                          </>
-                        ) : price > 0 ? (
-                          <span className="text-2xl font-bold text-primary">
-                            ${(price / 100).toFixed(2)}
-                          </span>
+                          )
                         ) : (
-                          <span className="text-lg font-bold text-green-500">
-                            Free
-                          </span>
+                          <span className="text-2xl font-bold text-accent">Free</span>
                         )}
                       </div>
-                      <Link
-                        href={`/course/${course.id}`}
-                        className="text-primary hover:text-primary-dark font-medium text-sm transition-colors"
-                      >
-                        View Details →
-                      </Link>
+
+                      {/* Urgency indicator */}
+                      <div className="text-right">
+                        <span className="text-xs text-accent font-semibold bg-accent/10 px-2 py-1 rounded-full border border-accent/20">
+                          ⚡ Popular
+                        </span>
+                      </div>
                     </div>
 
-                    {/* Action Button */}
-                    <button
-                      onClick={() =>
-                        isEnrolled ? handleViewCourse(course.id) : handleEnroll(course.id)
-                      }
-                      disabled={isEnrolling}
-                      className={`w-full py-3 rounded-xl font-semibold transition-all hover:scale-105 ${
-                        isEnrolled
-                          ? 'bg-green-600 hover:bg-green-700 text-white shadow-lg'
-                          : 'bg-primary hover:bg-primary-dark text-background glow'
-                      } ${isEnrolling ? 'opacity-50 cursor-not-allowed' : ''}`}
-                    >
-                      {isEnrolling ? '⏳ Enrolling...' : isEnrolled ? '→ Continue Learning' : price > 0 ? 'Add to Cart' : 'Enroll Free'}
-                    </button>
+                    {/* Action Buttons */}
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handleViewCourse(course.id)}
+                        className="flex-1 bg-surface-light hover:bg-surface border border-primary/30 text-primary py-2 px-4 rounded-lg font-medium text-sm transition-all hover:border-primary/60"
+                      >
+                        {isEnrolled ? 'Continue' : 'Preview'}
+                      </button>
+                      <button
+                        onClick={() => handleEnroll(course.id)}
+                        disabled={isEnrolling}
+                        className={`flex-1 py-2 px-4 rounded-lg font-semibold text-sm transition-all hover:scale-105 ${
+                          isEnrolled
+                            ? 'bg-green-600 hover:bg-green-700 text-white'
+                            : 'bg-primary hover:bg-primary-dark text-background glow'
+                        } ${isEnrolling ? 'opacity-50 cursor-not-allowed' : ''}`}
+                      >
+                        {isEnrolling ? '⏳ Processing...' : isEnrolled ? '→ Continue' : price > 0 ? 'Add to Cart' : 'Enroll Free'}
+                      </button>
+                    </div>
                   </div>
                 </div>
               );
