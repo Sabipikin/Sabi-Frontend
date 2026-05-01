@@ -32,7 +32,12 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-surface to-background px-4 py-8">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-surface to-background px-4 py-8 relative">
+      {/* Home Link */}
+      <Link href="/" className="absolute top-6 left-6 text-foreground hover:text-primary font-medium transition-colors flex items-center gap-2">
+        <span>←</span> Home
+      </Link>
+
       <div className="w-full max-w-md p-6 sm:p-8 bg-surface/90 backdrop-blur-sm rounded-2xl border border-primary/20 glow">
         <div className="text-center mb-6 sm:mb-8">
           <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-2 font-display">Get started</h1>
