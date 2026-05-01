@@ -4,14 +4,60 @@ import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { useCart } from '@/context/CartContext';
+import { API_BASE_URL } from '@/services/api';
+
+interface Course {
+  id: number;
+  title: string;
+  description: string;
+  category: string;
+  difficulty: string;
+  duration_hours: number;
+  status: string;
+  created_at: string;
+  fee: number;
+  promo_amount?: number;
+  is_on_promo?: boolean;
+}
+
+interface Program {
+  id: number;
+  title: string;
+  description: string;
+  category: string;
+  difficulty: string;
+  duration_hours: number;
+  status: string;
+  created_at: string;
+  fee: number;
+  promo_amount?: number;
+  is_on_promo?: boolean;
+}
+
+interface Diploma {
+  id: number;
+  title: string;
+  description: string;
+  category: string;
+  difficulty: string;
+  duration_hours: number;
+  status: string;
+  created_at: string;
+  fee: number;
+  promo_amount?: number;
+  is_on_promo?: boolean;
+}
 
 export default function Home() {
-  const { token, loading } = useAuth();
+  const { token, loading, userToken } = useAuth();
   const router = useRouter();
-  const [topCourses, setTopCourses] = useState<any[]>([]);
-  const [topPrograms, setTopPrograms] = useState<any[]>([]);
-  const [topDiplomas, setTopDiplomas] = useState<any[]>([]);
+  const { addToCart } = useCart();
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [programs, setPrograms] = useState<Program[]>([]);
+  const [diplomas, setDiplomas] = useState<Diploma[]>([]);
   const [catalogLoading, setCatalogLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState<'courses' | 'programs' | 'diplomas'>('courses');
 
   useEffect(() => {
     if (!loading && token) {
@@ -24,9 +70,9 @@ export default function Home() {
       try {
         setCatalogLoading(true);
         const [coursesRes, programsRes, diplomasRes] = await Promise.all([
-          fetch('/api/courses/featured'),
-          fetch('/api/programs?skip=0&limit=4'),
-          fetch('/api/diplomas?skip=0&limit=4'),
+          fetch(`${API_BASE_URL}/api/courses/?skip=0&limit=12`),
+          fetch(`${API_BASE_URL}/api/programs/?skip=0&limit=12`),
+          fetch(`${API_BASE_URL}/api/diplomas/?skip=0&limit=12`),
         ]);
 
         const [coursesData, programsData, diplomasData] = await Promise.all([
@@ -35,9 +81,9 @@ export default function Home() {
           diplomasRes.ok ? diplomasRes.json() : [],
         ]);
 
-        setTopCourses(Array.isArray(coursesData) ? coursesData : []);
-        setTopPrograms(Array.isArray(programsData) ? programsData : []);
-        setTopDiplomas(Array.isArray(diplomasData) ? diplomasData : []);
+        setCourses(Array.isArray(coursesData) ? coursesData : []);
+        setPrograms(Array.isArray(programsData) ? programsData : []);
+        setDiplomas(Array.isArray(diplomasData) ? diplomasData : []);
       } catch (err) {
         console.error('Failed to load catalog items:', err);
       } finally {
@@ -47,6 +93,90 @@ export default function Home() {
 
     fetchCatalog();
   }, []);
+
+  const handleAddToCart = async (item: any, type: 'course' | 'program' | 'diploma') => {
+    try {
+      await addToCart({
+        item_type: type,
+        [`${type}_id`]: item.id,
+        price: item.fee || 0,
+        discount: item.is_on_promo && item.promo_amount ? item.fee - item.promo_amount : 0,
+        quantity: 1,
+      });
+
+      if (!token && !userToken) {
+        router.push(`/signup?next=/checkout`);
+      } else {
+        router.push('/checkout');
+      }
+    } catch (error) {
+      console.error('Failed to add to cart:', error);
+    }
+  };
+
+  const renderItemCard = (item: any, type: 'course' | 'program' | 'diploma') => {
+    const price = item.fee || 0;
+    const discount = item.is_on_promo && item.promo_amount ? item.fee - item.promo_amount : 0;
+    const finalPrice = discount > 0 ? discount : price;
+
+    return (
+      <div key={item.id} className="bg-surface/80 backdrop-blur-sm rounded-2xl p-6 border border-primary/20 hover:border-primary/40 transition-all hover:scale-105 glow group">
+        <div className="mb-4">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-medium text-primary bg-primary/10 px-2 py-1 rounded-full">
+              {item.category}
+            </span>
+            <span className="text-xs font-medium text-accent bg-accent/10 px-2 py-1 rounded-full">
+              {item.difficulty}
+            </span>
+          </div>
+          <h3 className="text-xl font-bold text-foreground mb-2 font-display group-hover:text-primary transition-colors">
+            {item.title}
+          </h3>
+          <p className="text-text-muted text-sm line-clamp-2 mb-3">
+            {item.description}
+          </p>
+          <div className="flex items-center gap-4 text-xs text-text-muted">
+            <span>⏱️ {item.duration_hours}h</span>
+            <span>📚 {type.charAt(0).toUpperCase() + type.slice(1)}</span>
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between">
+          <div className="flex flex-col">
+            {discount > 0 ? (
+              <>
+                <span className="text-lg font-bold text-primary">
+                  ${(finalPrice / 100).toFixed(2)}
+                </span>
+                <span className="text-sm text-text-muted line-through">
+                  ${(price / 100).toFixed(2)}
+                </span>
+              </>
+            ) : (
+              <span className="text-lg font-bold text-primary">
+                ${(price / 100).toFixed(2)}
+              </span>
+            )}
+          </div>
+          <div className="flex gap-2">
+            <Link
+              href={`/${type}s/${item.id}`}
+              className="text-primary hover:text-primary-dark font-medium text-sm transition-colors"
+            >
+              View Details
+            </Link>
+            <button
+              onClick={() => handleAddToCart(item, type)}
+              className="bg-primary text-background px-4 py-2 rounded-lg hover:bg-primary-dark font-medium text-sm transition-all hover:scale-105"
+            >
+              Add to Cart
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   if (loading) {
     return (
@@ -88,8 +218,8 @@ export default function Home() {
       </nav>
 
       {/* Hero Section */}
-      <main className="max-w-7xl mx-auto px-6 py-20 text-center">
-        <div className="mb-16">
+      <main className="max-w-7xl mx-auto px-6 py-20">
+        <div className="text-center mb-16">
           <h1 className="text-5xl md:text-7xl font-bold text-foreground mb-8 leading-tight font-display">
             Land Your Tech Career<br />
             <span className="text-primary glow-text">Faster</span>
@@ -104,13 +234,96 @@ export default function Home() {
           <Link href="/signup" className="bg-primary text-background px-10 py-5 rounded-xl hover:bg-primary-dark font-semibold text-lg glow transition-all hover:scale-105 hover:shadow-2xl">
             Start for free
           </Link>
-          <Link href="/#features" className="border-2 border-primary/50 text-primary px-10 py-5 rounded-xl hover:bg-primary/10 hover:border-primary font-semibold text-lg transition-all hover:scale-105">
-            Learn more
+          <Link href="/#marketplace" className="border-2 border-primary/50 text-primary px-10 py-5 rounded-xl hover:bg-primary/10 hover:border-primary font-semibold text-lg transition-all hover:scale-105">
+            Browse Courses
           </Link>
         </div>
 
+        {/* Marketplace Section */}
+        <div id="marketplace" className="mb-24">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-bold text-foreground mb-4 font-display">Explore Our Marketplace</h2>
+            <p className="text-text-muted text-lg">Choose from courses, programs, or complete diploma paths</p>
+          </div>
+
+          {/* Tab Navigation */}
+          <div className="flex justify-center mb-12">
+            <div className="bg-surface/50 rounded-xl p-1 border border-primary/20">
+              <button
+                onClick={() => setActiveTab('courses')}
+                className={`px-6 py-3 rounded-lg font-medium transition-all ${
+                  activeTab === 'courses'
+                    ? 'bg-primary text-background shadow-lg'
+                    : 'text-foreground hover:text-primary'
+                }`}
+              >
+                Courses ({courses.length})
+              </button>
+              <button
+                onClick={() => setActiveTab('programs')}
+                className={`px-6 py-3 rounded-lg font-medium transition-all ${
+                  activeTab === 'programs'
+                    ? 'bg-primary text-background shadow-lg'
+                    : 'text-foreground hover:text-primary'
+                }`}
+              >
+                Programs ({programs.length})
+              </button>
+              <button
+                onClick={() => setActiveTab('diplomas')}
+                className={`px-6 py-3 rounded-lg font-medium transition-all ${
+                  activeTab === 'diplomas'
+                    ? 'bg-primary text-background shadow-lg'
+                    : 'text-foreground hover:text-primary'
+                }`}
+              >
+                Diplomas ({diplomas.length})
+              </button>
+            </div>
+          </div>
+
+          {/* Content Grid */}
+          {catalogLoading ? (
+            <div className="flex justify-center py-12">
+              <div className="animate-pulse">
+                <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+              </div>
+            </div>
+          ) : (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {activeTab === 'courses' && courses.map(course => renderItemCard(course, 'course'))}
+              {activeTab === 'programs' && programs.map(program => renderItemCard(program, 'program'))}
+              {activeTab === 'diplomas' && diplomas.map(diploma => renderItemCard(diploma, 'diploma'))}
+            </div>
+          )}
+
+          {/* View All Links */}
+          <div className="text-center mt-12">
+            <div className="flex flex-col sm:flex-row justify-center gap-4">
+              <Link
+                href="/courses"
+                className="bg-primary/10 border border-primary/30 text-primary px-8 py-4 rounded-xl hover:bg-primary/20 hover:border-primary font-semibold transition-all hover:scale-105"
+              >
+                View All Courses →
+              </Link>
+              <Link
+                href="/programs"
+                className="bg-secondary/10 border border-secondary/30 text-secondary px-8 py-4 rounded-xl hover:bg-secondary/20 hover:border-secondary font-semibold transition-all hover:scale-105"
+              >
+                View All Programs →
+              </Link>
+              <Link
+                href="/diplomas"
+                className="bg-accent/10 border border-accent/30 text-accent px-8 py-4 rounded-xl hover:bg-accent/20 hover:border-accent font-semibold transition-all hover:scale-105"
+              >
+                View All Diplomas →
+              </Link>
+            </div>
+          </div>
+        </div>
+
         {/* Features Preview */}
-        <div id="features" className="grid md:grid-cols-3 gap-8 mt-20">
+        <div className="grid md:grid-cols-3 gap-8 mb-24">
           <div className="bg-surface/80 backdrop-blur-sm rounded-2xl p-8 text-left border border-primary/20 hover:border-primary/40 transition-all hover:scale-105 glow">
             <div className="text-5xl mb-6">🚀</div>
             <h3 className="text-2xl font-bold text-foreground mb-4 font-display">Accelerated Learning</h3>
@@ -136,61 +349,8 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Featured Courses */}
-        <div className="mt-24">
-          <h2 className="text-4xl font-bold text-foreground mb-12 text-center font-display">Top Courses</h2>
-          {catalogLoading ? (
-            <div className="flex justify-center">
-              <div className="animate-pulse">
-                <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
-              </div>
-            </div>
-          ) : topCourses.length > 0 ? (
-            <div className="grid md:grid-cols-3 gap-8">
-              {topCourses.map((course) => (
-                <div key={course.id} className="bg-surface/80 backdrop-blur-sm rounded-2xl p-6 border border-primary/20 hover:border-primary/40 transition-all hover:scale-105 glow">
-                  <h3 className="text-xl font-bold text-foreground mb-3 font-display">{course.title}</h3>
-                  <p className="text-text-muted mb-4 line-clamp-3">{course.description}</p>
-                  <div className="flex items-center justify-between">
-                    <span className="text-primary font-semibold">
-                      ${(course.price / 100).toFixed(2)}
-                    </span>
-                    <Link href={`/courses/${course.id}`} className="text-primary hover:text-primary-dark font-medium transition-colors">
-                      View Course →
-                    </Link>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="text-text-muted text-center">No featured courses available yet.</p>
-          )}
-        </div>
-
-        {/* Quick Access */}
-        <div className="mt-24 grid md:grid-cols-2 gap-8">
-          <Link href="/diplomas" className="block bg-surface/80 backdrop-blur-sm rounded-3xl p-10 border border-primary/20 hover:border-primary hover:shadow-xl transition-all">
-            <h3 className="text-3xl font-bold text-foreground mb-4">Diplomas</h3>
-            <p className="text-text-muted mb-6">
-              Explore diploma paths with multiple programs and career-aligned learning journeys.
-            </p>
-            <div className="inline-flex items-center gap-2 text-primary font-semibold">
-              View diploma programs →
-            </div>
-          </Link>
-          <Link href="/programs" className="block bg-surface/80 backdrop-blur-sm rounded-3xl p-10 border border-secondary/20 hover:border-secondary hover:shadow-xl transition-all">
-            <h3 className="text-3xl font-bold text-foreground mb-4">Programs</h3>
-            <p className="text-text-muted mb-6">
-              Browse structured programs that group the courses you need for fast, practical skill-building.
-            </p>
-            <div className="inline-flex items-center gap-2 text-secondary font-semibold">
-              Explore programs →
-            </div>
-          </Link>
-        </div>
-
         {/* Stats */}
-        <div className="grid md:grid-cols-3 gap-8 mt-24 text-center">
+        <div className="grid md:grid-cols-3 gap-8 text-center">
           <div className="bg-surface/50 rounded-xl p-8 border border-primary/20">
             <div className="text-4xl md:text-5xl font-bold text-primary mb-2 font-display">2-3 weeks</div>
             <p className="text-text-muted">From signup to job-ready</p>
