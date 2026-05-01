@@ -5,7 +5,7 @@ import { useAuth } from '@/context/AuthContext';
 import { API_BASE_URL } from '@/services/api';
 import PurchaseOptions from '@/components/PurchaseOptions';
 
-const DiplomaDetailsPage = () => {
+const DiplomaDetailsPage: React.FC = () => {
   const router = useRouter();
   const { diplomaId } = router.query;
   const { token } = useAuth();
@@ -175,45 +175,110 @@ const DiplomaDetailsPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto">
-        {/* Header */}
-        <div className="bg-white rounded-lg shadow-md p-8 mb-8">
-          {diploma.image_url && (
-            <img
-              src={diploma.image_url}
-              alt={diploma.title}
-              className="w-full h-64 object-cover rounded-lg mb-6"
-            />
-          )}
-          
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">{diploma.title}</h1>
-          
-          <div className="grid grid-cols-3 gap-4 mb-6 text-gray-600">
-            <div>
-              <p className="text-sm text-gray-500">Level</p>
-              <p className="font-semibold">{diploma.level}</p>
-            </div>
-            <div>
-              <p className="text-sm text-gray-500">Duration</p>
-              <p className="font-semibold">{diploma.duration_years} year{diploma.duration_years > 1 ? 's' : ''}</p>
-            </div>
-            <div>
-              <p className="text-sm text-gray-500">Programs</p>
-              <p className="font-semibold">{programs.length}</p>
+    <div className="min-h-screen bg-gradient-to-br from-background via-surface to-background">
+      {/* Conditional Navigation based on auth status */}
+      {token ? (
+        <nav className="flex justify-between items-center px-6 py-6 max-w-7xl mx-auto relative">
+          <div className="flex items-center gap-10">
+            <Link href="/dashboard" className="text-3xl font-bold text-foreground font-display glow-text">Sabipath</Link>
+            <div className="hidden md:flex items-center gap-6">
+              <Link href="/dashboard" className="text-foreground hover:text-primary font-medium transition-colors">
+                Dashboard
+              </Link>
+              <Link href="/my-courses" className="text-foreground hover:text-primary font-medium transition-colors">
+                My Courses
+              </Link>
+              <Link href="/portfolio" className="text-foreground hover:text-primary font-medium transition-colors">
+                Portfolio
+              </Link>
             </div>
           </div>
-
-          <p className="text-gray-600 mb-6">{diploma.description}</p>
-
-          {/* Enrollment Section */}
-          <div className="border-t pt-6">
-            {!isAuthenticated ? (
-              <Link href="/login">
-                <button className="bg-purple-600 text-white py-2 px-6 rounded-lg hover:bg-purple-700">
-                  Sign in to Enroll
-                </button>
+          <div className="flex items-center space-x-6">
+            <span className="text-foreground">Welcome back!</span>
+            <button onClick={() => { localStorage.removeItem('token'); window.location.href = '/'; }} className="text-foreground hover:text-primary font-medium transition-colors">
+              Sign out
+            </button>
+          </div>
+        </nav>
+      ) : (
+        <nav className="flex justify-between items-center px-6 py-6 max-w-7xl mx-auto relative">
+          <div className="flex items-center gap-10">
+            <Link href="/" className="text-3xl font-bold text-foreground font-display glow-text">Sabipath</Link>
+            <div className="hidden md:flex items-center gap-6">
+              <Link href="/diplomas" className="text-foreground hover:text-primary font-medium transition-colors">
+                Diplomas
               </Link>
+              <Link href="/programs" className="text-foreground hover:text-primary font-medium transition-colors">
+                Programs
+              </Link>
+              <Link href="/courses" className="text-foreground hover:text-primary font-medium transition-colors">
+                Courses
+              </Link>
+            </div>
+          </div>
+          <div className="flex items-center space-x-6">
+            <Link href="/login" className="text-foreground hover:text-primary font-medium transition-colors">
+              Sign in
+            </Link>
+            <Link href="/signup" className="bg-primary text-background px-6 py-3 rounded-xl hover:bg-primary-dark font-semibold glow transition-all hover:scale-105">
+              Get started
+            </Link>
+          </div>
+        </nav>
+      )}
+
+      <main className="max-w-7xl mx-auto px-6 py-12">
+        {/* Diploma Header */}
+        <div className="bg-surface/80 backdrop-blur-sm rounded-2xl p-8 mb-12 border border-primary/20 glow">
+          <div className="flex flex-col lg:flex-row items-start justify-between mb-6">
+            <div className="flex-1 mb-6 lg:mb-0">
+              {token ? (
+                <Link href="/dashboard" className="text-primary hover:text-primary-dark font-medium mb-6 inline-flex items-center transition-colors">
+                  <span className="mr-2">←</span> Back to Dashboard
+                </Link>
+              ) : (
+                <Link href="/diplomas" className="text-primary hover:text-primary-dark font-medium mb-6 inline-flex items-center transition-colors">
+                  <span className="mr-2">←</span> Back to Diplomas
+                </Link>
+              )}
+              <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4 font-display">{diploma.title}</h1>
+              <p className="text-text-muted mb-6 leading-relaxed">{diploma.description}</p>
+              
+              <div className="grid grid-cols-4 gap-4 mb-6 text-text-muted">
+                <div>
+                  <p className="text-sm text-text-muted/70">Level</p>
+                  <p className="font-semibold text-foreground">{diploma.level}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-text-muted/70">Duration</p>
+                  <p className="font-semibold text-foreground">{diploma.duration_years} year{diploma.duration_years > 1 ? 's' : ''}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-text-muted/70">Programs</p>
+                  <p className="font-semibold text-foreground">{programs.length}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-text-muted/70">Price</p>
+                  <p className="font-semibold text-primary">{diploma.fee ? `$${(diploma.fee / 100).toFixed(2)}` : 'Free'}</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Enrollment Section */}
+            <div className="border-t border-primary/20 pt-6">
+            {!isAuthenticated ? (
+              <div className="space-y-4">
+                <Link href="/login">
+                  <button className="bg-primary text-background px-6 py-3 rounded-xl hover:bg-primary-dark font-semibold glow transition-all hover:scale-105 mr-4">
+                    Sign in to Enroll
+                  </button>
+                </Link>
+                <Link href="/signup">
+                  <button className="bg-surface text-foreground px-6 py-3 rounded-xl border border-primary/20 hover:bg-primary/10 font-semibold transition-all hover:scale-105">
+                    Create Account
+                  </button>
+                </Link>
+              </div>
             ) : enrollment ? (
               <div>
                 <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
@@ -236,7 +301,7 @@ const DiplomaDetailsPage = () => {
                 {enrollment.status === 'enrolled' && (
                   <button
                     onClick={handleStartLearning}
-                    className="bg-purple-600 text-white py-2 px-6 rounded-lg hover:bg-purple-700"
+                    className="bg-primary text-background px-6 py-3 rounded-xl hover:bg-primary-dark font-semibold glow transition-all hover:scale-105"
                   >
                     Start Learning
                   </button>
@@ -261,28 +326,28 @@ const DiplomaDetailsPage = () => {
             )}
           </div>
         </div>
-
+        </div>
         {/* Programs List */}
-        <div className="bg-white rounded-lg shadow-md p-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Programs in this Diploma</h2>
+        <div className="bg-surface/80 backdrop-blur-sm rounded-2xl p-8 border border-primary/20 glow">
+          <h2 className="text-2xl font-bold text-foreground mb-6">Programs in this Diploma</h2>
           
           {programs.length === 0 ? (
-            <p className="text-gray-500">No programs available</p>
+            <p className="text-text-muted">No programs available</p>
           ) : (
             <div className="space-y-4">
               {programs.map((program) => (
                 <Link key={program.id} href={`/programs/${program.id}`}>
-                  <div className="cursor-pointer border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                  <div className="cursor-pointer bg-surface/50 border border-primary/10 rounded-xl p-6 hover:bg-surface/70 hover:border-primary/20 transition-all hover:scale-[1.02]">
                     <div className="flex justify-between items-start">
                       <div className="flex-1">
-                        <h3 className="font-semibold text-gray-900">{program.title}</h3>
-                        <p className="text-sm text-gray-600 mt-1">{program.short_description}</p>
-                        <div className="flex gap-4 mt-2 text-sm text-gray-500">
+                        <h3 className="font-semibold text-foreground mb-2">{program.title}</h3>
+                        <p className="text-sm text-text-muted mb-3">{program.short_description}</p>
+                        <div className="flex gap-4 text-sm text-text-muted/70">
                           <span>{program.difficulty}</span>
                           <span>{program.courses ? program.courses.length : 0} courses</span>
                         </div>
                       </div>
-                      <button className="text-purple-600 hover:text-purple-700 font-semibold">
+                      <button className="text-primary hover:text-primary-dark font-semibold transition-colors">
                         View →
                       </button>
                     </div>
@@ -319,7 +384,7 @@ const DiplomaDetailsPage = () => {
             </div>
           </div>
         )}
-      </div>
+      </main>
     </div>
   );
 };

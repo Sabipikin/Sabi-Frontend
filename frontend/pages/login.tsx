@@ -24,9 +24,9 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-surface to-background px-4 py-8 relative">
-      {/* Home Link */}
-      <Link href="/" className="absolute top-6 left-6 text-foreground hover:text-primary font-medium transition-colors flex items-center gap-2">
-        <span>←</span> Home
+      {/* Home Link - More Prominent */}
+      <Link href="/" className="absolute top-8 left-8 z-10 bg-surface/80 backdrop-blur-sm px-4 py-2 rounded-xl border border-primary/20 text-foreground hover:text-primary font-medium transition-all hover:scale-105 flex items-center gap-2 shadow-lg">
+        <span>🏠</span> Home
       </Link>
 
       <div className="w-full max-w-md p-6 sm:p-8 bg-surface/90 backdrop-blur-sm rounded-2xl border border-primary/20 glow">

@@ -336,15 +336,50 @@ export default function CoursePage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-surface to-background">
-      <Navbar />
+      {/* Conditional Navigation based on auth status */}
+      {token ? (
+        <Navbar />
+      ) : (
+        <nav className="flex justify-between items-center px-6 py-6 max-w-7xl mx-auto relative">
+          <div className="flex items-center gap-10">
+            <Link href="/" className="text-3xl font-bold text-foreground font-display glow-text">Sabipath</Link>
+            <div className="hidden md:flex items-center gap-6">
+              <Link href="/diplomas" className="text-foreground hover:text-primary font-medium transition-colors">
+                Diplomas
+              </Link>
+              <Link href="/programs" className="text-foreground hover:text-primary font-medium transition-colors">
+                Programs
+              </Link>
+              <Link href="/courses" className="text-foreground hover:text-primary font-medium transition-colors">
+                Courses
+              </Link>
+            </div>
+          </div>
+          <div className="flex items-center space-x-6">
+            <Link href="/login" className="text-foreground hover:text-primary font-medium transition-colors">
+              Sign in
+            </Link>
+            <Link href="/signup" className="bg-primary text-background px-6 py-3 rounded-xl hover:bg-primary-dark font-semibold glow transition-all hover:scale-105">
+              Get started
+            </Link>
+          </div>
+        </nav>
+      )}
+
       <main className="max-w-7xl mx-auto px-6 py-12">
         {/* Course Header */}
         <div className="bg-surface/80 backdrop-blur-sm rounded-2xl p-8 mb-12 border border-primary/20 glow">
           <div className="flex flex-col lg:flex-row items-start justify-between mb-6">
             <div className="flex-1 mb-6 lg:mb-0">
-              <Link href="/dashboard" className="text-primary hover:text-primary-dark font-medium mb-6 inline-flex items-center transition-colors">
-                <span className="mr-2">←</span> Back to Dashboard
-              </Link>
+              {token ? (
+                <Link href="/dashboard" className="text-primary hover:text-primary-dark font-medium mb-6 inline-flex items-center transition-colors">
+                  <span className="mr-2">←</span> Back to Dashboard
+                </Link>
+              ) : (
+                <Link href="/courses" className="text-primary hover:text-primary-dark font-medium mb-6 inline-flex items-center transition-colors">
+                  <span className="mr-2">←</span> Back to Courses
+                </Link>
+              )}
               <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4 font-display">{course?.title}</h1>
               <p className="text-text-muted mb-6 leading-relaxed">{course?.description}</p>
 
