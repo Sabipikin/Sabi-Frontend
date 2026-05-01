@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { MessageCircle } from 'lucide-react';
 
 export default function Navbar() {
   const { user, logout } = useAuth();
@@ -65,7 +64,7 @@ export default function Navbar() {
                     rel="noopener noreferrer"
                     className="flex items-center justify-center gap-2 w-full px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium text-sm transition-all"
                   >
-                    <MessageCircle size={16} />
+                    💬
                     Message on WhatsApp
                   </a>
                 </div>
@@ -140,7 +139,7 @@ export default function Navbar() {
                     }}
                     className="flex items-center justify-center gap-2 w-full px-3 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium text-sm transition-all"
                   >
-                    <MessageCircle size={16} />
+                    💬
                     Message on WhatsApp
                   </a>
                 </div>
