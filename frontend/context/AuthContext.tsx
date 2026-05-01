@@ -24,14 +24,28 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [error, setError] = useState<string | null>(null);
   const [enrolledCourses, setEnrolledCourses] = useState<{ enrollment: Enrollment; course: Course }[]>([]);
 
-  // Load token from localStorage on mount
+  // Load token from localStorage on mount and validate it
   useEffect(() => {
-    const storedToken = localStorage.getItem('authToken');
-    if (storedToken) {
-      setToken(storedToken);
-      // Optionally fetch current user here
-    }
-    setLoading(false);
+    const validateStoredToken = async () => {
+      const storedToken = localStorage.getItem('authToken');
+      if (storedToken) {
+        try {
+          // Verify token is valid by fetching current user
+          const currentUser = await apiService.getCurrentUser(storedToken);
+          setToken(storedToken);
+          setUser(currentUser);
+        } catch (err) {
+          console.warn('Stored token is invalid:', err instanceof Error ? err.message : 'Unknown error');
+          // Clear invalid token
+          localStorage.removeItem('authToken');
+          setToken(null);
+          setUser(null);
+        }
+      }
+      setLoading(false);
+    };
+    
+    validateStoredToken();
   }, []);
 
   const refreshEnrolledCourses = async () => {
