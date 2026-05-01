@@ -1,22 +1,21 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
-@import "tailwindcss";
-
-@theme {
-  --color-background: #0a0a0a;
-  --color-foreground: #ffffff;
-  --color-primary: #00d4ff;
-  --color-primary-dark: #0099cc;
-  --color-secondary: #ff6b6b;
-  --color-accent: #4ecdc4;
-  --color-surface: #1a1a1a;
-  --color-surface-light: #2a2a2a;
-  --color-text-muted: #a0a0a0;
-  --color-border: #333333;
-  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
-  --font-display: 'Space Grotesk', 'Inter', system-ui, -apple-system, sans-serif;
-}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 :root {
+  --background: #0a0a0a;
+  --foreground: #ffffff;
+  --primary: #00d4ff;
+  --primary-dark: #0099cc;
+  --secondary: #ff6b6b;
+  --accent: #4ecdc4;
+  --surface: #1a1a1a;
+  --surface-light: #2a2a2a;
+  --text-muted: #a0a0a0;
+  --border: #333333;
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-display: 'Space Grotesk', 'Inter', system-ui, -apple-system, sans-serif;
   --shadow: rgba(0, 212, 255, 0.1);
   --shadow-strong: rgba(0, 212, 255, 0.2);
 }
