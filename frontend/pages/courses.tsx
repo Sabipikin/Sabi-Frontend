@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Navbar from '@/components/Navbar';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { API_BASE_URL } from '@/services/api';
 import PurchaseOptions from '@/components/PurchaseOptions';
@@ -154,44 +154,72 @@ export default function Courses() {
   const difficulties = ['all', 'beginner', 'intermediate', 'advanced'];
 
   return (
-    <main className="min-h-screen bg-gray-900">
-      <Navbar />
-      
-      <div className="max-w-7xl mx-auto px-4 py-12">
+    <div className="min-h-screen bg-gradient-to-br from-background via-surface to-background">
+      {/* Navigation */}
+      <nav className="flex justify-between items-center px-6 py-6 max-w-7xl mx-auto relative">
+        <div className="flex items-center gap-10">
+          <Link href="/" className="text-3xl font-bold text-foreground font-display glow-text">Sabipath</Link>
+          <div className="hidden md:flex items-center gap-6">
+            <Link href="/diplomas" className="text-foreground hover:text-primary font-medium transition-colors">
+              Diplomas
+            </Link>
+            <Link href="/programs" className="text-foreground hover:text-primary font-medium transition-colors">
+              Programs
+            </Link>
+            <Link href="/courses" className="text-foreground hover:text-primary font-medium transition-colors">
+              Courses
+            </Link>
+          </div>
+        </div>
+        <div className="flex items-center space-x-6">
+          <Link href="/login" className="text-foreground hover:text-primary font-medium transition-colors">
+            Sign in
+          </Link>
+          <Link href="/signup" className="bg-primary text-background px-6 py-3 rounded-xl hover:bg-primary-dark font-semibold glow transition-all hover:scale-105">
+            Get started
+          </Link>
+        </div>
+      </nav>
+
+      <main className="max-w-7xl mx-auto px-6 py-12">
         {/* Header */}
-        <div className="mb-12">
-          <h1 className="text-4xl font-bold text-white mb-2">Explore Courses</h1>
-          <p className="text-gray-400">Discover and enroll in courses to level up your skills</p>
+        <div className="text-center mb-16">
+          <h1 className="text-5xl md:text-6xl font-bold text-foreground mb-6 font-display">
+            Explore Our <span className="text-primary glow-text">Courses</span>
+          </h1>
+          <p className="text-xl text-text-muted mb-8 max-w-3xl mx-auto">
+            Discover individual courses designed to build specific skills. Each course is crafted for practical, real-world application.
+          </p>
         </div>
 
         {error && (
-          <div className="mb-6 p-4 bg-red-900/20 border border-red-500 text-red-300 rounded-lg">
+          <div className="mb-8 p-4 bg-red-900/20 border border-red-500 text-red-300 rounded-xl">
             {error}
           </div>
         )}
 
         {/* Filters */}
-        <div className="mb-8 bg-gray-800 rounded-lg p-6 border border-gray-700">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="mb-12 bg-surface/80 backdrop-blur-sm rounded-2xl p-8 border border-primary/20">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             {/* Search */}
             <div>
-              <label className="block text-gray-400 text-sm font-medium mb-2">Search</label>
+              <label className="block text-foreground text-sm font-medium mb-3">Search Courses</label>
               <input
                 type="text"
-                placeholder="Search courses..."
+                placeholder="Search by title or description..."
                 value={filters.search}
                 onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 text-white rounded-lg focus:ring-2 focus:ring-cyan-500"
+                className="w-full px-4 py-3 bg-background border border-primary/30 text-foreground rounded-xl focus:ring-2 focus:ring-primary focus:border-primary transition-all"
               />
             </div>
 
             {/* Category Filter */}
             <div>
-              <label className="block text-gray-400 text-sm font-medium mb-2">Category</label>
+              <label className="block text-foreground text-sm font-medium mb-3">Category</label>
               <select
                 value={filters.category}
                 onChange={(e) => setFilters({ ...filters, category: e.target.value })}
-                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 text-white rounded-lg focus:ring-2 focus:ring-cyan-500"
+                className="w-full px-4 py-3 bg-background border border-primary/30 text-foreground rounded-xl focus:ring-2 focus:ring-primary focus:border-primary transition-all"
               >
                 {categories.map((cat) => (
                   <option key={cat} value={cat}>
@@ -203,11 +231,11 @@ export default function Courses() {
 
             {/* Difficulty Filter */}
             <div>
-              <label className="block text-gray-400 text-sm font-medium mb-2">Difficulty</label>
+              <label className="block text-foreground text-sm font-medium mb-3">Difficulty</label>
               <select
                 value={filters.difficulty}
                 onChange={(e) => setFilters({ ...filters, difficulty: e.target.value })}
-                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 text-white rounded-lg focus:ring-2 focus:ring-cyan-500"
+                className="w-full px-4 py-3 bg-background border border-primary/30 text-foreground rounded-xl focus:ring-2 focus:ring-primary focus:border-primary transition-all"
               >
                 {difficulties.map((diff) => (
                   <option key={diff} value={diff}>
@@ -218,10 +246,10 @@ export default function Courses() {
             </div>
 
             {/* Results Count */}
-            <div className="flex items-end">
-              <div className="text-gray-400">
-                <span className="text-cyan-400 font-bold text-lg">{filteredCourses.length}</span>
-                <span> courses</span>
+            <div className="flex items-end justify-center">
+              <div className="text-center">
+                <div className="text-3xl font-bold text-primary font-display">{filteredCourses.length}</div>
+                <div className="text-text-muted text-sm">courses found</div>
               </div>
             </div>
           </div>
@@ -229,74 +257,99 @@ export default function Courses() {
 
         {/* Courses Grid */}
         {loading ? (
-          <div className="text-center py-12">
-            <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-400"></div>
-            <p className="text-gray-400 mt-4">Loading courses...</p>
+          <div className="flex justify-center py-20">
+            <div className="animate-pulse">
+              <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+            </div>
           </div>
         ) : filteredCourses.length === 0 ? (
-          <div className="text-center py-12 bg-gray-800 rounded-lg border border-gray-700">
-            <p className="text-gray-400 text-lg">No courses found</p>
-            <p className="text-gray-500 text-sm mt-2">Try adjusting your filters</p>
+          <div className="text-center py-20 bg-surface/50 rounded-2xl border border-primary/20">
+            <div className="text-6xl mb-4">📚</div>
+            <h3 className="text-2xl font-bold text-foreground mb-2 font-display">No courses found</h3>
+            <p className="text-text-muted">Try adjusting your search filters</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredCourses.map((course) => {
               const isEnrolled = enrolledCourseIds.has(course.id);
               const isEnrolling = enrolling === course.id;
+              const price = course.fee || 0;
+              const discount = course.is_on_promo && course.promo_amount ? course.fee - course.promo_amount : 0;
+              const finalPrice = discount > 0 ? discount : price;
 
               return (
                 <div
                   key={course.id}
-                  className="bg-gray-800 rounded-lg overflow-hidden border border-gray-700 hover:border-cyan-500 transition-all hover:shadow-lg hover:shadow-cyan-500/20"
+                  className="bg-surface/80 backdrop-blur-sm rounded-2xl overflow-hidden border border-primary/20 hover:border-primary/40 transition-all hover:scale-105 glow group"
                 >
                   {/* Course Header */}
-                  <div className="h-32 bg-gradient-to-r from-cyan-600 to-blue-600 flex items-center justify-center">
-                    <div className="text-center">
-                      <p className="text-white text-sm font-medium">{course.category}</p>
-                      <p className="text-cyan-100 text-xs mt-1">Level: {course.difficulty}</p>
+                  <div className="h-40 bg-gradient-to-r from-primary via-secondary to-accent flex items-center justify-center relative">
+                    <div className="text-center text-background">
+                      <div className="text-2xl mb-2">{course.category}</div>
+                      <div className="text-sm opacity-90">Level: {course.difficulty}</div>
                     </div>
+                    {isEnrolled && (
+                      <div className="absolute top-4 right-4 bg-green-500 text-white px-3 py-1 rounded-full text-xs font-bold">
+                        ✓ Enrolled
+                      </div>
+                    )}
                   </div>
 
                   {/* Course Content */}
                   <div className="p-6">
                     {/* Title */}
-                    <h3 className="text-xl font-bold text-white mb-2 line-clamp-2">{course.title}</h3>
+                    <h3 className="text-xl font-bold text-foreground mb-3 font-display group-hover:text-primary transition-colors line-clamp-2">
+                      {course.title}
+                    </h3>
 
                     {/* Description */}
-                    <p className="text-gray-400 text-sm mb-4 line-clamp-2">{course.description}</p>
+                    <p className="text-text-muted text-sm mb-4 line-clamp-3">
+                      {course.description}
+                    </p>
 
                     {/* Meta Info */}
-                    <div className="flex gap-4 text-xs text-gray-500 mb-6">
-                      <div className="flex items-center gap-1">
-                        <span>⏱️</span>
-                        <span>{course.duration_hours} hours</span>
+                    <div className="flex items-center justify-between text-xs text-text-muted mb-6">
+                      <div className="flex items-center gap-4">
+                        <span className="flex items-center gap-1">
+                          <span>⏱️</span>
+                          <span>{course.duration_hours}h</span>
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <span>📅</span>
+                          <span>{new Date(course.created_at).toLocaleDateString()}</span>
+                        </span>
                       </div>
-                      <div className="flex items-center gap-1">
-                        <span>📅</span>
-                        <span>{new Date(course.created_at).toLocaleDateString()}</span>
-                      </div>
-                      {course.fee > 0 && (
-                        <div className="flex items-center gap-1">
-                          <span>💷</span>
-                          <span>
-                            {course.is_on_promo && course.promo_amount ? (
-                              <>
-                                <span className="line-through">{(course.fee / 100).toFixed(2)}</span> £{(course.promo_amount / 100).toFixed(2)}
-                              </>
-                            ) : (
-                              `£${(course.fee / 100).toFixed(2)}`
-                            )}
-                          </span>
-                        </div>
-                      )}
                     </div>
 
-                    {/* Status Badge */}
-                    {isEnrolled && (
-                      <div className="inline-block px-3 py-1 bg-green-900/30 border border-green-600 text-green-300 rounded-full text-xs font-medium mb-4">
-                        ✓ Enrolled
+                    {/* Pricing */}
+                    <div className="flex items-center justify-between mb-6">
+                      <div className="flex flex-col">
+                        {discount > 0 ? (
+                          <>
+                            <span className="text-2xl font-bold text-primary">
+                              ${(finalPrice / 100).toFixed(2)}
+                            </span>
+                            <span className="text-sm text-text-muted line-through">
+                              ${(price / 100).toFixed(2)}
+                            </span>
+                          </>
+                        ) : price > 0 ? (
+                          <span className="text-2xl font-bold text-primary">
+                            ${(price / 100).toFixed(2)}
+                          </span>
+                        ) : (
+                          <span className="text-lg font-bold text-green-500">
+                            Free
+                          </span>
+                        )}
                       </div>
-                    )}
+                      <Link
+                        href={`/course/${course.id}`}
+                        className="text-primary hover:text-primary-dark font-medium text-sm transition-colors"
+                      >
+                        View Details →
+                      </Link>
+                    </div>
 
                     {/* Action Button */}
                     <button
@@ -304,13 +357,13 @@ export default function Courses() {
                         isEnrolled ? handleViewCourse(course.id) : handleEnroll(course.id)
                       }
                       disabled={isEnrolling}
-                      className={`w-full py-2 rounded-lg font-medium transition-all ${
+                      className={`w-full py-3 rounded-xl font-semibold transition-all hover:scale-105 ${
                         isEnrolled
-                          ? 'bg-green-600 hover:bg-green-700 text-white'
-                          : 'bg-cyan-600 hover:bg-cyan-700 text-white'
+                          ? 'bg-green-600 hover:bg-green-700 text-white shadow-lg'
+                          : 'bg-primary hover:bg-primary-dark text-background glow'
                       } ${isEnrolling ? 'opacity-50 cursor-not-allowed' : ''}`}
                     >
-                      {isEnrolling ? '⏳ Enrolling...' : isEnrolled ? '→ Continue Learning' : 'Enroll Now'}
+                      {isEnrolling ? '⏳ Enrolling...' : isEnrolled ? '→ Continue Learning' : price > 0 ? 'Add to Cart' : 'Enroll Free'}
                     </button>
                   </div>
                 </div>
@@ -318,15 +371,15 @@ export default function Courses() {
             })}
           </div>
         )}
-      </div>
+      </main>
 
       {/* Purchase Options Modal */}
       {showPayment && courses.find(c => c.id === showPayment) && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-gray-900 rounded-lg max-w-2xl w-full p-6 border border-gray-700 relative">
+          <div className="bg-surface rounded-2xl max-w-2xl w-full p-8 border border-primary/20 relative">
             <button
               onClick={() => setShowPayment(null)}
-              className="absolute top-4 right-4 text-gray-400 hover:text-white"
+              className="absolute top-4 right-4 text-foreground hover:text-primary text-xl"
             >
               ✕
             </button>
@@ -340,6 +393,6 @@ export default function Courses() {
           </div>
         </div>
       )}
-    </main>
+    </div>
   );
 }
