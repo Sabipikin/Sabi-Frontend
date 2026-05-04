@@ -20,11 +20,8 @@ export default function Navbar() {
 
   const navLinks = [
     { href: '/dashboard', label: 'Dashboard' },
-    { href: '/diplomas', label: 'Diplomas' },
-    { href: '/programs', label: 'Programs' },
-    { href: '/courses', label: 'Courses' },
     { href: '/my-courses', label: 'My Learning' },
-    { href: '/certificates', label: 'Certificates' },
+    { href: '/programs', label: 'Programs' },
     { href: '/portfolio', label: 'Portfolio' },
   ];
 
@@ -47,6 +44,10 @@ export default function Navbar() {
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all group-hover:w-full"></span>
               </Link>
             ))}
+            {/* Certificates Button - Prominent */}
+            <Link href="/certificates" className="inline-flex items-center gap-2 px-3 lg:px-4 py-1.5 lg:py-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white rounded-full font-semibold text-sm lg:text-base transition-all hover:scale-105 shadow-lg shadow-amber-500/30">
+              🎓 Certificates
+            </Link>
             <div className="relative">
               <button 
                 onClick={() => setHelpOpen(!helpOpen)}
@@ -119,6 +120,14 @@ export default function Navbar() {
                 {link.label}
               </Link>
             ))}
+            {/* Certificates Link - Mobile */}
+            <Link
+              href="/certificates"
+              className="block px-3 py-2 mx-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-lg font-semibold text-sm transition-all"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              🎓 Certificates
+            </Link>
             <div className="px-3 py-2 space-y-2">
               <button
                 onClick={() => setHelpOpen(!helpOpen)}
