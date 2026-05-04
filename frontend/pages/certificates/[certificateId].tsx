@@ -5,7 +5,7 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import { useAuth } from '@/context/AuthContext';
-import { API_BASE_URL } from '@/services/api';
+import { API_BASE_URL, apiService } from '@/services/api';
 
 interface CertificateDetail {
   id: number;
@@ -84,12 +84,12 @@ export default function CertificateDetailPage() {
     }
   };
 
-  const downloadCertificate = async () => {
+  const downloadCertificate = async (format: string = 'pdf') => {
     if (!certificate) return;
 
     try {
       const response = await fetch(
-        `${API_BASE_URL}/api/certificates/user/certificate/${certificate.id}/download?format=pdf`,
+        `${API_BASE_URL}/api/certificates/user/certificate/${certificate.id}/download?format=${format}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -104,11 +104,30 @@ export default function CertificateDetailPage() {
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `certificate_${certificate.certificate_number}.pdf`;
+      link.download = `certificate_${certificate.certificate_number}.${format === 'jpeg' ? 'jpg' : format}`;
       link.click();
       window.URL.revokeObjectURL(url);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unable to download certificate.');
+    }
+  };
+
+  const addToPortfolio = async () => {
+    if (!certificate) return;
+
+    try {
+      const portfolioData = {
+        name: `${getCertificateTypeLabel(certificate.item_type).replace(/📚|🎯|🎓/g, '').trim()} in ${certificate.item_name}`,
+        issuer: 'Sabikin',
+        issue_date: certificate.issued_at.split('T')[0], // Format as YYYY-MM-DD
+        credential_id: certificate.certificate_number,
+        credential_url: window.location.href
+      };
+
+      await apiService.addCertificate(portfolioData, token || undefined);
+      alert('Certificate added to portfolio successfully!');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Unable to add certificate to portfolio.');
     }
   };
 
@@ -210,18 +229,31 @@ export default function CertificateDetailPage() {
 
               <div className="flex flex-col gap-3 sm:flex-row">
                 <button
-                  onClick={downloadCertificate}
+                  onClick={() => downloadCertificate('pdf')}
                   className="inline-flex h-14 flex-1 items-center justify-center rounded-full bg-cyan-500 px-6 text-sm font-semibold text-slate-950 transition hover:bg-cyan-400"
                 >
                   Download PDF
                 </button>
                 <button
-                  disabled
-                  className="inline-flex h-14 flex-1 items-center justify-center rounded-full border border-slate-700/80 bg-slate-900/80 px-6 text-sm font-semibold text-slate-500"
+                  onClick={() => downloadCertificate('jpeg')}
+                  className="inline-flex h-14 flex-1 items-center justify-center rounded-full bg-blue-500 px-6 text-sm font-semibold text-white transition hover:bg-blue-400"
                 >
-                  PNG coming soon
+                  Download JPEG
+                </button>
+                <button
+                  onClick={() => downloadCertificate('png')}
+                  className="inline-flex h-14 flex-1 items-center justify-center rounded-full bg-green-500 px-6 text-sm font-semibold text-white transition hover:bg-green-400"
+                >
+                  Download PNG
                 </button>
               </div>
+
+              <button
+                onClick={addToPortfolio}
+                className="inline-flex h-14 w-full items-center justify-center rounded-full bg-purple-500 px-6 text-sm font-semibold text-white transition hover:bg-purple-400"
+              >
+                Add to Portfolio
+              </button>
 
               {renderChangeRequest()}
             </section>

@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import { useAuth } from '@/context/AuthContext';
-import { API_BASE_URL } from '@/services/api';
+import { API_BASE_URL, apiService } from '@/services/api';
 
 interface Certificate {
   id: number;
@@ -75,10 +75,10 @@ export default function CertificatesPage() {
     }
   };
 
-  const downloadCertificate = async (certificateId: number) => {
+  const downloadCertificate = async (certificateId: number, format: string = 'pdf') => {
     try {
       const response = await fetch(
-        `${API_BASE_URL}/api/certificates/user/certificate/${certificateId}/download?format=pdf`,
+        `${API_BASE_URL}/api/certificates/user/certificate/${certificateId}/download?format=${format}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -95,11 +95,28 @@ export default function CertificatesPage() {
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `certificate_${certificateId}.pdf`;
+      link.download = `certificate_${certificateId}.${format === 'jpeg' ? 'jpg' : format}`;
       link.click();
       window.URL.revokeObjectURL(url);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unable to download certificate.');
+    }
+  };
+
+  const addToPortfolio = async (certificate: Certificate) => {
+    try {
+      const portfolioData = {
+        name: `${getCertificateTypeLabel(certificate.item_type).replace(/📚|🎯|🎓/g, '').trim()} in ${certificate.item_name || 'Achievement'}`,
+        issuer: 'Sabikin',
+        issue_date: certificate.issued_at.split('T')[0], // Format as YYYY-MM-DD
+        credential_id: certificate.certificate_number,
+        credential_url: `${window.location.origin}/certificates/${certificate.id}`
+      };
+
+      await apiService.addCertificate(portfolioData, token || undefined);
+      alert('Certificate added to portfolio successfully!');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Unable to add certificate to portfolio.');
     }
   };
 
@@ -153,18 +170,36 @@ export default function CertificatesPage() {
                       <div className="mt-2 text-sm text-white">{formatDate(certificate.issued_at)}</div>
                     </div>
                   </div>
-                  <div className="flex flex-wrap gap-3">
+                  <div className="flex flex-wrap gap-2">
                     <button
-                      onClick={() => downloadCertificate(certificate.id)}
-                      className="inline-flex items-center justify-center rounded-full bg-cyan-500 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-cyan-400"
+                      onClick={() => downloadCertificate(certificate.id, 'pdf')}
+                      className="inline-flex items-center justify-center rounded-full bg-cyan-500 px-3 py-2 text-xs font-semibold text-slate-950 transition hover:bg-cyan-400"
                     >
-                      Download PDF
+                      PDF
+                    </button>
+                    <button
+                      onClick={() => downloadCertificate(certificate.id, 'jpeg')}
+                      className="inline-flex items-center justify-center rounded-full bg-blue-500 px-3 py-2 text-xs font-semibold text-white transition hover:bg-blue-400"
+                    >
+                      JPEG
+                    </button>
+                    <button
+                      onClick={() => downloadCertificate(certificate.id, 'png')}
+                      className="inline-flex items-center justify-center rounded-full bg-green-500 px-3 py-2 text-xs font-semibold text-white transition hover:bg-green-400"
+                    >
+                      PNG
+                    </button>
+                    <button
+                      onClick={() => addToPortfolio(certificate)}
+                      className="inline-flex items-center justify-center rounded-full bg-purple-500 px-3 py-2 text-xs font-semibold text-white transition hover:bg-purple-400"
+                    >
+                      Add to Portfolio
                     </button>
                     <Link
                       href={`/certificates/${certificate.id}`}
-                      className="inline-flex items-center justify-center rounded-full border border-slate-700 px-4 py-2 text-sm font-semibold text-slate-200 transition hover:border-slate-500 hover:text-white"
+                      className="inline-flex items-center justify-center rounded-full border border-slate-700 px-3 py-2 text-xs font-semibold text-slate-200 transition hover:border-slate-500 hover:text-white"
                     >
-                      View Details
+                      Details
                     </Link>
                   </div>
                   <div className="rounded-2xl border border-slate-700/80 bg-slate-950/80 px-4 py-3 text-sm text-slate-400">
