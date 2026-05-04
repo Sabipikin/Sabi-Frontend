@@ -24,6 +24,7 @@ export default function Navbar() {
     { href: '/programs', label: 'Programs' },
     { href: '/courses', label: 'Courses' },
     { href: '/my-courses', label: 'My Learning' },
+    { href: '/certificates', label: 'Certificates' },
     { href: '/portfolio', label: 'Portfolio' },
   ];
 
