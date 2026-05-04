@@ -21,6 +21,7 @@ export default function RecommendationsWidget({ userToken }: RecommendationsWidg
   const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [showComingSoon, setShowComingSoon] = useState(false);
 
   useEffect(() => {
     if (!userToken) return;
@@ -45,6 +46,11 @@ export default function RecommendationsWidget({ userToken }: RecommendationsWidg
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleComingSoon = () => {
+    setShowComingSoon(true);
+    setTimeout(() => setShowComingSoon(false), 3000); // Hide after 3 seconds
   };
 
   if (loading) {
@@ -127,6 +133,40 @@ export default function RecommendationsWidget({ userToken }: RecommendationsWidg
             Trending
           </button>
         </Link>
+      </div>
+
+      {/* Recommended Learning Path Section */}
+      <div className="mt-6 pt-4 border-t border-indigo-200">
+        <h4 className="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2">
+          <span>🎯</span> Recommended Learning Path
+        </h4>
+        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 border border-blue-200 mb-4">
+          <p className="text-sm text-gray-700 mb-3">
+            Based on your region (UK) and career goals, we recommend starting with our Data Analyst learning path. This comprehensive program will give you the skills needed for high-demand roles.
+          </p>
+          <div className="flex gap-2">
+            <button
+              onClick={handleComingSoon}
+              className="flex-1 px-3 py-2 bg-blue-600 text-white rounded font-semibold hover:bg-blue-700 transition-all text-sm"
+            >
+              Start Data Analyst Path
+            </button>
+            <button
+              onClick={handleComingSoon}
+              className="flex-1 px-3 py-2 border border-blue-300 text-blue-600 rounded font-semibold hover:bg-blue-50 transition-all text-sm"
+            >
+              Customize My Path
+            </button>
+          </div>
+        </div>
+
+        {/* Coming Soon Message */}
+        {showComingSoon && (
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 text-center">
+            <p className="text-yellow-800 font-semibold">Coming Soon! 🚀</p>
+            <p className="text-yellow-700 text-sm">This feature is currently under development.</p>
+          </div>
+        )}
       </div>
     </div>
   );
